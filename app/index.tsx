@@ -11,7 +11,7 @@ export default function Index() {
         }
       }
     >
-      <Text>Hello World</Text>
+      <Text className="text-xl">Hello World</Text>
     </View>
   );
 }

@@ -1,5 +1,7 @@
+import HeaderReel from "@/components/layouts/header";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
+import { View } from "react-native";
 import "./global.css";
 
 export default function RootLayout() {
@@ -7,9 +9,12 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" options={{ title: "Home" }} />
-      </Stack>
+      <View className="flex-1">
+        <HeaderReel />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" options={{ title: "Home" }} />
+        </Stack>
+      </View>
     </QueryClientProvider>
   );
 }

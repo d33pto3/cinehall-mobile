@@ -10,7 +10,7 @@ const TabsLayout = () => {
         name="index"
         options={{
           headerTitle: "Home Tab",
-          title: "Home Tab Title",
+          title: "Home",
           tabBarIcon: ({ color, size }) => (
             <Entypo name="home" size={size} color={color} />
           ),

@@ -1,8 +1,7 @@
-// app/(tabs)/tab_1/index.js
 import { Text } from "react-native";
 
 const index = () => {
-  return <Text>Tab 1</Text>;
+  return <Text>Bookings</Text>;
 };
 
 export default index;

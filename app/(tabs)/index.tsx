@@ -1,10 +1,12 @@
 import { getAllMovies } from "@/api/movie";
 import MovieCarousel from "@/components/Home/MovieCarousel";
 import { Movie } from "@/schemas/movieSchema";
+import { useMovieStore } from "@/store/movieStore";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import Feather from "@expo/vector-icons/Feather";
 import { useQuery } from "@tanstack/react-query";
-import { ScrollView, StatusBar, Text, View } from "react-native";
+import { useEffect } from "react";
+import { ScrollView, Text, View } from "react-native";
 const HEADER_HEIGHT = 46;
 
 const HomePage = () => {
@@ -14,7 +16,15 @@ const HomePage = () => {
     retry: 2,
   });
 
-  console.log(StatusBar.currentHeight || 0);
+  // Use Zustand for global client state
+  const { setMovies } = useMovieStore();
+
+  // Sync React Query data to Zustand when data is available
+  useEffect(() => {
+    if (data) {
+      setMovies(data);
+    }
+  }, [data, setMovies]);
 
   const movieUrls = data?.map((movie: Movie) => movie.imageUrl);
 

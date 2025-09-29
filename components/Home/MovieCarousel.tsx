@@ -1,3 +1,5 @@
+import { Movie } from "@/schemas/movieSchema";
+import { useMovieStore } from "@/store/movieStore";
 import React, { useEffect, useRef } from "react";
 import { ActivityIndicator, Dimensions, Image, Text, View } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
@@ -8,18 +10,20 @@ const { width } = Dimensions.get("window");
 const CAROUSEL_HEIGHT = width / 2; // maintain aspect ratio 2:1
 
 export default function MovieCarousel({
-  urls,
   isError,
   isLoading,
   error,
 }: {
-  urls: string[];
   isError: boolean;
   isLoading: boolean;
   error: any;
 }) {
   const ref = useRef<ICarouselInstance>(null);
   const progress = useSharedValue<number>(0);
+
+  const { movies } = useMovieStore();
+
+  const urls = movies?.map((movie: Movie) => movie.imageUrl);
 
   useEffect(() => {
     if (isError && error instanceof Error) {
@@ -49,7 +53,7 @@ export default function MovieCarousel({
       )}
 
       {/* Carousel */}
-      {!isLoading && !isError && urls.length > 0 && (
+      {!isLoading && !isError && urls && urls.length > 0 && (
         <Carousel
           ref={ref}
           width={width}
@@ -67,7 +71,7 @@ export default function MovieCarousel({
               }}
             >
               <Image
-                style={{ width: "100%", height: "100%", borderRadius: 10 }}
+                style={{ width: "100%", height: "100%" }}
                 resizeMode="cover"
                 source={{ uri: item }}
               />

@@ -1,52 +1,80 @@
-import React, { useRef } from "react";
-import { Dimensions, Text, View } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { ActivityIndicator, Dimensions, Image, Text, View } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
+import { Toast } from "toastify-react-native";
 
-const data = [...new Array(6).keys()];
-const width = Dimensions.get("window").width;
+const { width } = Dimensions.get("window");
+const CAROUSEL_HEIGHT = width / 2; // maintain aspect ratio 2:1
 
-console.log(width);
-
-export default function MovieCarousel() {
+export default function MovieCarousel({
+  urls,
+  isError,
+  isLoading,
+  error,
+}: {
+  urls: string[];
+  isError: boolean;
+  isLoading: boolean;
+  error: any;
+}) {
   const ref = useRef<ICarouselInstance>(null);
   const progress = useSharedValue<number>(0);
 
-  // const onPressPagination = (index: number) => {
-  //   ref.current?.scrollTo({
-  //     count: index - progress.value,
-  //     animated: true,
-  //   });
-  // };
+  useEffect(() => {
+    if (isError && error instanceof Error) {
+      // Toast will show only once when error occurs
+      setTimeout(() => Toast.error(error.message), 100);
+    }
+  }, [isError, error]);
 
   return (
-    <View className="flex-1">
-      <Carousel
-        ref={ref}
-        width={width}
-        height={width / 2}
-        data={data}
-        onProgressChange={progress}
-        renderItem={({ index }) => (
-          <View
-            style={{
-              flex: 1,
-              // borderWidth: 1,
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ textAlign: "center", fontSize: 30 }}>{index}</Text>
-          </View>
-        )}
-      />
+    <View
+      style={{
+        width,
+        height: CAROUSEL_HEIGHT,
+        justifyContent: "center",
+        alignItems: "center",
+        // borderBottomColor: "#000",
+      }}
+    >
+      {/* Loading State */}
+      {isLoading && <ActivityIndicator size="large" color="#000" />}
 
-      {/* <Pagination.Basic
-        progress={progress}
-        data={data}
-        dotStyle={{ backgroundColor: "rgba(0,0,0,0.2)", borderRadius: 50 }}
-        containerStyle={{ gap: 5, marginTop: 10 }}
-        onPress={onPressPagination}
-      /> */}
+      {/* Error State */}
+      {isError && (
+        <Text style={{ color: "red", fontSize: 16, textAlign: "center" }}>
+          Failed to load movies.
+        </Text>
+      )}
+
+      {/* Carousel */}
+      {!isLoading && !isError && urls.length > 0 && (
+        <Carousel
+          ref={ref}
+          width={width}
+          height={CAROUSEL_HEIGHT}
+          data={urls}
+          onProgressChange={progress}
+          loop
+          renderItem={({ index, item }) => (
+            <View
+              key={index}
+              style={{
+                width,
+                height: CAROUSEL_HEIGHT,
+                justifyContent: "center",
+              }}
+            >
+              <Image
+                style={{ width: "100%", height: "100%", borderRadius: 10 }}
+                resizeMode="cover"
+                source={{ uri: item }}
+              />
+            </View>
+          )}
+        />
+      )}
     </View>
   );
 }

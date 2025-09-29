@@ -1,6 +1,5 @@
 import { getAllMovies } from "@/api/movie";
 import MovieCarousel from "@/components/Home/MovieCarousel";
-import { Movie } from "@/schemas/movieSchema";
 import { useMovieStore } from "@/store/movieStore";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import Feather from "@expo/vector-icons/Feather";
@@ -25,8 +24,6 @@ const HomePage = () => {
       setMovies(data);
     }
   }, [data, setMovies]);
-
-  const movieUrls = data?.map((movie: Movie) => movie.imageUrl);
 
   return (
     <View className="flex-1">
@@ -60,7 +57,6 @@ const HomePage = () => {
       {/* Scroll Content with padding to avoid overlap */}
       <ScrollView contentContainerStyle={{ paddingTop: HEADER_HEIGHT }}>
         <MovieCarousel
-          urls={movieUrls}
           isLoading={isLoading}
           error={error}
           isError={isError}

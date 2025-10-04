@@ -1,12 +1,13 @@
 import { getAllMovies } from "@/api/movie";
 import MovieCarousel from "@/components/Home/MovieCarousel";
+import NowShowing from "@/components/Home/NowShowing";
 import { useMovieStore } from "@/store/movieStore";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import Feather from "@expo/vector-icons/Feather";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { ScrollView, Text, View } from "react-native";
-const HEADER_HEIGHT = 46;
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const HomePage = () => {
   const { data, isLoading, isError, error } = useQuery({
@@ -14,6 +15,8 @@ const HomePage = () => {
     queryFn: getAllMovies,
     retry: 2,
   });
+
+  const insets = useSafeAreaInsets();
 
   // Use Zustand for global client state
   const { setMovies } = useMovieStore();
@@ -35,7 +38,8 @@ const HomePage = () => {
           left: 0,
           right: 0,
           zIndex: 10,
-          backgroundColor: "#fff",
+          // backgroundColor: "#fff",
+          backgroundColor: "#ccc",
           paddingHorizontal: 24,
           paddingVertical: 8,
           borderBottomWidth: 1,
@@ -43,7 +47,7 @@ const HomePage = () => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          height: HEADER_HEIGHT,
+          height: insets.top,
         }}
         className="absolute top-0 left-0 right-0 z-10 bg-white px-6 py-2 border-b border-neutral-300 flex-row items-center justify-between"
       >
@@ -55,7 +59,7 @@ const HomePage = () => {
       </View>
 
       {/* Scroll Content with padding to avoid overlap */}
-      <ScrollView contentContainerStyle={{ paddingTop: HEADER_HEIGHT }}>
+      <ScrollView contentContainerStyle={{ paddingTop: insets.top }}>
         <MovieCarousel
           isLoading={isLoading}
           error={error}
@@ -63,6 +67,8 @@ const HomePage = () => {
           // refetch={refetch}
         />
       </ScrollView>
+
+      <NowShowing />
     </View>
   );
 };

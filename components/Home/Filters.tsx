@@ -61,7 +61,7 @@ export default function Filters() {
         {/* Selected Filters as Pills (scrollable) */}
         <ScrollView
           horizontal
-          showsHorizontalScrollIndicator={false}
+          showsHorizontalScrollIndicator={true}
           contentContainerStyle={{ flexDirection: "row", alignItems: "center" }}
         >
           {selectedFilters.map((filter) => (

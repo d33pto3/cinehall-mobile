@@ -8,13 +8,19 @@ export default function NowShowing() {
 
   useEffect(() => {
     const fetchNowShowingMovies = async () => {
-      const response = await api.get("/movie/now-showing");
+      try {
+        const response = await api.get("/movie/now-showing");
 
-      console.log(response);
+        setNowShowingMovies(response.data.movies);
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     fetchNowShowingMovies();
   }, []);
+
+  console.log("movies", nowShowingMovies);
 
   return (
     <View style={{ padding: 12 }}>

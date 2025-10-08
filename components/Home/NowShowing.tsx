@@ -26,6 +26,7 @@ export default function NowShowing() {
     <View style={{ padding: 12 }}>
       <Text style={{ fontSize: 16, fontWeight: "500" }}>Now Showing</Text>
       <Filters />
+      <Text className="text-5xl">OOKOKO</Text>
     </View>
   );
 }

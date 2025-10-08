@@ -29,7 +29,7 @@ const HomePage = () => {
   }, [data, setMovies]);
 
   return (
-    <View className="flex-1">
+    <View>
       {/* Sticky Header */}
       <View
         style={{
@@ -48,8 +48,10 @@ const HomePage = () => {
           alignItems: "center",
           justifyContent: "space-between",
           height: insets.top,
+          paddingBottom: 5,
+          minHeight: 40,
         }}
-        className="absolute top-0 left-0 right-0 z-10 bg-white px-6 py-2 border-b border-neutral-300 flex-row items-center justify-between"
+        // className="absolute top-0 left-0 right-0 z-10 bg-white px-6 py-2 border-b border-neutral-300 flex-row items-center justify-between"
       >
         <Text className="text-lg font-bold">Cinehall</Text>
         <View style={{ flexDirection: "row", gap: 16, alignItems: "center" }}>
@@ -59,7 +61,7 @@ const HomePage = () => {
       </View>
 
       {/* Scroll Content with padding to avoid overlap */}
-      <ScrollView contentContainerStyle={{ paddingTop: insets.top }}>
+      <ScrollView contentContainerStyle={{ paddingTop: insets.top + 5 }}>
         <MovieCarousel
           isLoading={isLoading}
           error={error}

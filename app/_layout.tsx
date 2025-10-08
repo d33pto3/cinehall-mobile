@@ -3,6 +3,8 @@ import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ToastManager from "toastify-react-native";
 
+import "./global.css";
+
 export default function RootLayout() {
   const queryClient = new QueryClient();
   return (

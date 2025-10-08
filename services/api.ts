@@ -1,4 +1,7 @@
 import axios from "axios";
+import { Platform } from "react-native";
+
+console.log("Platform", Platform.OS);
 
 // TODO: move to .env
 const API_BASE_URL = "http://10.15.5.153:8000/api/v1";

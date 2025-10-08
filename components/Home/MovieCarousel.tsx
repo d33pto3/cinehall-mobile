@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { ActivityIndicator, Dimensions, Image, Text, View } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Toast } from "toastify-react-native";
 
 const { width } = Dimensions.get("window");
@@ -20,6 +21,8 @@ export default function MovieCarousel({
 }) {
   const ref = useRef<ICarouselInstance>(null);
   const progress = useSharedValue<number>(0);
+
+  const insets = useSafeAreaInsets();
 
   const { movies } = useMovieStore();
 
@@ -40,7 +43,9 @@ export default function MovieCarousel({
         justifyContent: "center",
         alignItems: "center",
         // borderBottomColor: "#000",
+        paddingTop: insets.top,
       }}
+      className="grow-0"
     >
       {/* Loading State */}
       {isLoading && <ActivityIndicator size="large" color="#000" />}

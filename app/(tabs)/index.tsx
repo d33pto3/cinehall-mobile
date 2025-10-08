@@ -6,7 +6,7 @@ import EvilIcons from "@expo/vector-icons/EvilIcons";
 import Feather from "@expo/vector-icons/Feather";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const HomePage = () => {
@@ -29,7 +29,7 @@ const HomePage = () => {
   }, [data, setMovies]);
 
   return (
-    <View>
+    <View className="flex-1">
       {/* Sticky Header */}
       <View
         style={{
@@ -61,15 +61,18 @@ const HomePage = () => {
       </View>
 
       {/* Scroll Content with padding to avoid overlap */}
-      <ScrollView contentContainerStyle={{ paddingTop: insets.top + 5 }}>
-        <MovieCarousel
-          isLoading={isLoading}
-          error={error}
-          isError={isError}
-          // refetch={refetch}
-        />
-      </ScrollView>
-
+      <MovieCarousel
+        isLoading={isLoading}
+        error={error}
+        isError={isError}
+        // refetch={refetch}
+      />
+      <View
+      // contentContainerStyle={{
+      //   paddingTop: insets.top + 5,
+      //   paddingBottom: 50,
+      // }}
+      ></View>
       <NowShowing />
     </View>
   );

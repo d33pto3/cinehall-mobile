@@ -9,3 +9,12 @@ export const getAllMovies = async () => {
     throw err;
   }
 };
+
+export const getNowShowingMovies = async () => {
+  try {
+    const response = await api.get("/movie/now-showing");
+    return response.data.movies;
+  } catch (error) {
+    throw error;
+  }
+};

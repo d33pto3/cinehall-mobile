@@ -27,7 +27,7 @@ export default function Filters() {
     }
   };
   return (
-    <View>
+    <View className="mb-2">
       {/* Filter Row */}
       <View
         style={{

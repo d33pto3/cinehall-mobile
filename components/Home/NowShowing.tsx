@@ -1,15 +1,26 @@
-import { getNowShowingMovies } from "@/api/movie";
+import { getNowShowingMovies } from "@/api/movie/movie";
+import { movieKeys } from "@/api/movie/movieKeys";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import React from "react";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import Filters from "./Filters";
+import MovieCard from "./MovieCard";
 
 export default function NowShowing() {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["nowShowingMovies"],
+    queryKey: movieKeys.nowShowing(),
     queryFn: getNowShowingMovies,
     retry: 2,
   });
+
+  const router = useRouter();
+
+  const goToMovie = (movieId: string) => {
+    router.push(`/movie/${movieId}`);
+  };
+
+  if (isLoading) return <Text>Loading...</Text>;
 
   return (
     <View className="flex-1 py-2 px-3">
@@ -22,23 +33,7 @@ export default function NowShowing() {
         columnWrapperStyle={{ justifyContent: "space-between" }}
         contentContainerStyle={{ paddingVertical: 12 }}
         renderItem={({ item }) => (
-          <View className="w-[48%] flex mb-4">
-            <TouchableOpacity>
-              <Image
-                source={{ uri: item.imageUrl }}
-                className="w-full h-60 rounded-tl-xl rounded-tr-xl"
-                resizeMode="cover"
-              />
-              <View className="border-l-[1px] border-r-[1px] border-b-[1px] border-gray-300 rounded-bl-xl rounded-br-xl p-2">
-                <Text className="text-base font-semibold">{item.title}</Text>
-                <View className="flex-row items-center gap-1">
-                  <Text>{item.genre}</Text>
-                  <Text>|</Text>
-                  <Text>{new Date(item.releaseDate).getFullYear()}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          </View>
+          <MovieCard movie={item} onPress={goToMovie} />
         )}
       />
     </View>

@@ -1,4 +1,4 @@
-import { getAllMovies } from "@/api/movie";
+import { getAllMovies } from "@/api/movie/movie";
 import MovieCarousel from "@/components/Home/MovieCarousel";
 import NowShowing from "@/components/Home/NowShowing";
 import { useMovieStore } from "@/store/movieStore";

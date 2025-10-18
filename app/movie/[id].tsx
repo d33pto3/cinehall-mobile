@@ -1,7 +1,7 @@
 // app/movie/[id].tsx
 import { getMovie } from "@/api/movie/movie";
 import { movieKeys } from "@/api/movie/movieKeys";
-import { getDay } from "@/lib/getDay";
+import { getDay } from "@/lib/getCalendar";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
@@ -14,11 +14,10 @@ import {
   View,
 } from "react-native";
 
-// const oneDayTime = 60 * 60 * 24 * 1000;
-
 export default function MovieDetail() {
   const { id } = useLocalSearchParams();
   const movieId = Array.isArray(id) ? id[0] : id;
+
   const todate = new Date().getTime();
   const [selectedDate, setSelectedDate] = useState(new Date(todate).getDate());
 
@@ -55,7 +54,6 @@ export default function MovieDetail() {
       </Text>
 
       <View className="flex flex-row gap-2">
-        <View></View>
         {Array.from({ length: 5 }, (_, index) => {
           const date = new Date(todate);
           // 1. set the date based on index (0,1,2,3,4)
@@ -64,6 +62,7 @@ export default function MovieDetail() {
           const weekday = getDay(date.getDay());
           // 2. now, get the updated date
           const dayNum = date.getDate();
+          console.log(weekday);
           return (
             <TouchableOpacity
               key={index}
@@ -77,7 +76,9 @@ export default function MovieDetail() {
               >
                 {dayNum}
               </Text>
-              <Text className={`${selectedDate === dayNum && "text-white"}`}>
+              <Text
+                className={`${selectedDate === dayNum ? "text-white" : "text-gray-700"}`}
+              >
                 {weekday}
               </Text>
             </TouchableOpacity>

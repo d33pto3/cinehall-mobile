@@ -1,6 +1,7 @@
 // app/movie/[id].tsx
 import { getMovie } from "@/api/movie/movie";
 import { movieKeys } from "@/api/movie/movieKeys";
+import { getDay } from "@/lib/getDay";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
@@ -13,11 +14,13 @@ import {
   View,
 } from "react-native";
 
+// const oneDayTime = 60 * 60 * 24 * 1000;
+
 export default function MovieDetail() {
   const { id } = useLocalSearchParams();
   const movieId = Array.isArray(id) ? id[0] : id;
-  const today = new Date().getDate();
-  const [selectedDate, setSelectedDate] = useState(today);
+  const todate = new Date().getTime();
+  const [selectedDate, setSelectedDate] = useState(new Date(todate).getDate());
 
   const { data, isLoading, isError } = useQuery({
     queryKey: movieKeys.details(movieId),
@@ -53,20 +56,33 @@ export default function MovieDetail() {
 
       <View className="flex flex-row gap-2">
         <View></View>
-        {Array.from({ length: 5 }, (_, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => setSelectedDate(today + index)}
-            className={`flex items-center p-2 ${selectedDate === today + index ? "bg-black" : "bg-gray-50"} rounded-md`}
-          >
-            <Text
-              className={`${selectedDate === today + index && "text-white"} font-semibold text-sm`}
+        {Array.from({ length: 5 }, (_, index) => {
+          const date = new Date(todate);
+          // 1. set the date based on index (0,1,2,3,4)
+          date.setDate(date.getDate() + index);
+
+          const weekday = getDay(date.getDay());
+          // 2. now, get the updated date
+          const dayNum = date.getDate();
+          return (
+            <TouchableOpacity
+              key={index}
+              onPress={() => {
+                setSelectedDate(dayNum);
+              }}
+              className={`flex items-center ${selectedDate === dayNum ? "bg-black" : "bg-gray-50"} p-2 rounded-md`}
             >
-              {today + index}
-            </Text>
-            <Text className=""></Text>
-          </TouchableOpacity>
-        ))}
+              <Text
+                className={`${selectedDate === dayNum && "text-white"} font-semibold text-sm`}
+              >
+                {dayNum}
+              </Text>
+              <Text className={`${selectedDate === dayNum && "text-white"}`}>
+                {weekday}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </ScrollView>
   );

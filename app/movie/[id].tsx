@@ -1,14 +1,19 @@
 import { getMovie } from "@/api/movie/movie";
 import { movieKeys } from "@/api/movie/movieKeys";
 import ShowDay from "@/components/Movie/ShowDay";
+import { useBookingStore } from "@/store/bookingStore";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
 
 export default function MovieDetail() {
   const { id } = useLocalSearchParams();
   const movieId = Array.isArray(id) ? id[0] : id;
+
+  const setMovie = useBookingStore((state) => state.setMovie);
+  const setDate = useBookingStore((state) => state.setDate);
+
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const { data, isLoading, isError } = useQuery({
@@ -17,9 +22,18 @@ export default function MovieDetail() {
     enabled: !!movieId,
   });
 
-  const handleSelectDate = useCallback((date: Date) => {
-    setSelectedDate(date);
-  }, []);
+  useEffect(() => {
+    if (data) setMovie(data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  const handleSelectDate = useCallback(
+    (date: Date) => {
+      setSelectedDate(date);
+      setDate(date);
+    },
+    [setDate]
+  );
 
   if (isLoading)
     return (

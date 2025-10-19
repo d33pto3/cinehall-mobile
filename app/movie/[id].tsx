@@ -1,29 +1,25 @@
-// app/movie/[id].tsx
 import { getMovie } from "@/api/movie/movie";
 import { movieKeys } from "@/api/movie/movieKeys";
+import ShowDay from "@/components/Movie/ShowDay";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
-import {
-  ActivityIndicator,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useCallback, useState } from "react";
+import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
 
 export default function MovieDetail() {
   const { id } = useLocalSearchParams();
   const movieId = Array.isArray(id) ? id[0] : id;
-  const today = new Date().getDate();
-  const [selectedDate, setSelectedDate] = useState(today);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const { data, isLoading, isError } = useQuery({
     queryKey: movieKeys.details(movieId),
     queryFn: () => getMovie(movieId),
     enabled: !!movieId,
   });
+
+  const handleSelectDate = useCallback((date: Date) => {
+    setSelectedDate(date);
+  }, []);
 
   if (isLoading)
     return (
@@ -51,23 +47,8 @@ export default function MovieDetail() {
         {data.genre} | {data.duration} minutes
       </Text>
 
-      <View className="flex flex-row gap-2">
-        <View></View>
-        {Array.from({ length: 5 }, (_, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => setSelectedDate(today + index)}
-            className={`flex items-center p-2 ${selectedDate === today + index ? "bg-black" : "bg-gray-50"} rounded-md`}
-          >
-            <Text
-              className={`${selectedDate === today + index && "text-white"} font-semibold text-sm`}
-            >
-              {today + index}
-            </Text>
-            <Text className=""></Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      {/* Date picker */}
+      <ShowDay selectedDate={selectedDate} onSelect={handleSelectDate} />
     </ScrollView>
   );
 }

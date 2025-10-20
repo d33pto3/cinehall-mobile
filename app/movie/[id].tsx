@@ -9,22 +9,28 @@ import { Show } from "@/types/show";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function MovieDetail() {
   const { id } = useLocalSearchParams();
   const movieId = Array.isArray(id) ? id[0] : id;
+  const [canBookSeat, setCanBookSeat] = useState(false);
 
   const {
     movie,
-    date,
     showtime,
+    step,
     setMovie,
     setDate,
     setShowtime: setSlot,
   } = useBookingStore();
-
-  console.log(movie, date, showtime);
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -52,19 +58,29 @@ export default function MovieDetail() {
   }, [selectedDate, setDate]);
 
   useEffect(() => {
-    if (!showtime || !showtimes) return;
+    if (!movie || !showtimes) return;
 
-    // Check if the stored showtime exists for the selected date
-    const hasShowtimeForDate = showtimes.some(
-      (show: Show) => show.slot === showtime
-    );
+    // ✅ Check if the showtime in store is valid for this date
+    const hasShowtimeForDate =
+      showtime && showtimes.some((show: Show) => show.slot === showtime);
 
+    // ✅ Sync local slot with valid store showtime
     if (hasShowtimeForDate) {
       setSelectedSlot(showtime);
     } else {
       setSelectedSlot(null);
     }
-  }, [showtime, showtimes, selectedDate]);
+
+    // ✅ Decide if the user can book a seat
+    const canProceed =
+      !!movie &&
+      !!selectedDate &&
+      !!showtime &&
+      hasShowtimeForDate &&
+      step >= 3; // or step === 4, depending on your flow
+
+    setCanBookSeat(canProceed);
+  }, [movie, showtime, showtimes, selectedDate, step]);
 
   const handleSelectDate = useCallback(
     (date: Date) => {
@@ -122,6 +138,13 @@ export default function MovieDetail() {
           showtimes={showtimes}
           onSelect={handleSelectSlot}
         />
+      )}
+
+      {/*Step 4: Goto Seat Booking page and select seats */}
+      {canBookSeat && (
+        <TouchableOpacity className="mt-2 p-2 rounded-md bg-black">
+          <Text className="text-white text-center">Select seats</Text>
+        </TouchableOpacity>
       )}
     </ScrollView>
   );

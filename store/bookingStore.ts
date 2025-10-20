@@ -37,7 +37,7 @@ export const useBookingStore = create<BookingState>()(
           // prevent duplicate seats
           const alreadySelected = state.seats.some((s) => s._id === seat._id);
           if (alreadySelected) return state;
-          return { seats: [...state.seats, seat] };
+          return { seats: [...state.seats, seat], step: 5 };
         }),
 
       removeSeat: (seatId) =>

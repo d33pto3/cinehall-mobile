@@ -52,7 +52,9 @@ export default function MovieDetail() {
   }, [selectedDate, setDate]);
 
   useEffect(() => {
-    if (!showtime || !showtimes) return;
+    if (!movie || !showtime || !showtimes) return;
+
+    if (movie._id !== movieId) return;
 
     // Check if the stored showtime exists for the selected date
     const hasShowtimeForDate = showtimes.some(
@@ -64,7 +66,7 @@ export default function MovieDetail() {
     } else {
       setSelectedSlot(null);
     }
-  }, [showtime, showtimes, selectedDate]);
+  }, [showtime, showtimes, selectedDate, movie, movieId]);
 
   const handleSelectDate = useCallback(
     (date: Date) => {

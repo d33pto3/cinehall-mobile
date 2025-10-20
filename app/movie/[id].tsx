@@ -1,7 +1,11 @@
 import { getMovie } from "@/api/movie/movie";
 import { movieKeys } from "@/api/movie/movieKeys";
+import { fetchShowtimes } from "@/api/showtime/showtime";
 import ShowDay from "@/components/Movie/ShowDay";
+import Showtime from "@/components/Movie/Showtime";
+import { Slots } from "@/constants/showtime";
 import { useBookingStore } from "@/store/bookingStore";
+import { Show } from "@/types/show";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -11,28 +15,72 @@ export default function MovieDetail() {
   const { id } = useLocalSearchParams();
   const movieId = Array.isArray(id) ? id[0] : id;
 
-  const setMovie = useBookingStore((state) => state.setMovie);
-  const setDate = useBookingStore((state) => state.setDate);
+  const {
+    movie,
+    date,
+    showtime,
+    setMovie,
+    setDate,
+    setShowtime: setSlot,
+  } = useBookingStore();
+
+  console.log(movie, date, showtime);
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
 
+  // Fetch movie details
   const { data, isLoading, isError } = useQuery({
     queryKey: movieKeys.details(movieId),
     queryFn: () => getMovie(movieId),
     enabled: !!movieId,
   });
 
+  // Fetch showtimes for that date
+  const { data: showtimes, isLoading: showtimeLoading } = useQuery({
+    queryKey: ["showtimes", movieId, selectedDate],
+    queryFn: () => fetchShowtimes(movieId, selectedDate),
+    enabled: !!movieId && !!selectedDate,
+  });
+
   useEffect(() => {
     if (data) setMovie(data);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data, setMovie]);
+
+  useEffect(() => {
+    if (selectedDate) setDate(selectedDate);
+  }, [selectedDate, setDate]);
+
+  useEffect(() => {
+    if (!showtime || !showtimes) return;
+
+    // Check if the stored showtime exists for the selected date
+    const hasShowtimeForDate = showtimes.some(
+      (show: Show) => show.slot === showtime
+    );
+
+    if (hasShowtimeForDate) {
+      setSelectedSlot(showtime);
+    } else {
+      setSelectedSlot(null);
+    }
+  }, [showtime, showtimes, selectedDate]);
 
   const handleSelectDate = useCallback(
     (date: Date) => {
+      setSelectedSlot("");
       setSelectedDate(date);
       setDate(date);
     },
     [setDate]
+  );
+
+  const handleSelectSlot = useCallback(
+    (slot: string) => {
+      setSelectedSlot(slot);
+      setSlot(slot);
+    },
+    [setSlot]
   );
 
   if (isLoading)
@@ -51,6 +99,7 @@ export default function MovieDetail() {
 
   return (
     <ScrollView className="flex-1 px-4">
+      {/* Step 1: Selected Movie */}
       <Image
         source={{ uri: data.imageUrl }}
         className="w-full h-96 rounded-xl mb-4"
@@ -61,8 +110,19 @@ export default function MovieDetail() {
         {data.genre} | {data.duration} minutes
       </Text>
 
-      {/* Date picker */}
+      {/*Step 2: Date picker */}
       <ShowDay selectedDate={selectedDate} onSelect={handleSelectDate} />
+
+      {/*Step 3: Time Slots */}
+      {showtimeLoading ? (
+        <ActivityIndicator size="small" className="mt-4" />
+      ) : (
+        <Showtime
+          selectedSlot={selectedSlot as keyof typeof Slots}
+          showtimes={showtimes}
+          onSelect={handleSelectSlot}
+        />
+      )}
     </ScrollView>
   );
 }

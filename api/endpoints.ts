@@ -3,5 +3,6 @@ export const ENDPOINTS = {
   REGISTER: "/auth/register",
   GET_USER: "/user",
   MOVIES: "/movie",
+  SHOWTIME: "/show",
   MOVIE_DETAIL: (id: number) => `/movie/${id}`,
 };

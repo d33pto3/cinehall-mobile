@@ -16,8 +16,6 @@ const Showtime = ({ selectedSlot, showtimes, onSelect }: ShowtimeProps) => {
         const isActive = selectedSlot === key;
         const isDisabled = !showtimes.some((show) => show.slot === key);
 
-        console.log(isActive, isDisabled, key);
-
         return (
           <TouchableOpacity
             key={key}

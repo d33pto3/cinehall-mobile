@@ -7,13 +7,13 @@ import { persist } from "zustand/middleware";
 interface BookingState {
   movie: Movie | null;
   date: Date | null;
-  showtime: string | null;
+  slot: string | null;
   seats: Seat[];
   step: number;
 
   setMovie: (movie: Movie) => void;
-  setDate: (date: Date) => void;
-  setShowtime: (showtime: string) => void;
+  setDate: (date: Date | null) => void;
+  setSlot: (slot: string) => void;
   addSeat: (seat: Seat) => void;
   removeSeat: (seatId: string) => void;
   resetBooking: () => void;
@@ -21,20 +21,66 @@ interface BookingState {
 
 export const useBookingStore = create<BookingState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       movie: null,
       date: null,
-      showtime: null,
+      slot: null,
       seats: [],
       step: 1,
 
-      setMovie: (movie) => set({ movie, step: 2 }),
-      setDate: (date) => set({ date, step: 3 }),
-      setShowtime: (showtime) => set({ showtime, step: 4 }),
+      setMovie: (movie) => {
+        const { movie: currentMovie } = get();
+
+        // If same movie → do nothing
+        if (currentMovie?._id === movie._id) return;
+
+        // New movie → reset dependent fields
+        set({
+          movie,
+          step: 2,
+          date: null,
+          slot: null,
+          seats: [],
+        });
+      },
+
+      setDate: (selectedDate) => {
+        const { date: currentDate } = get();
+
+        if (!selectedDate) {
+          return set({
+            date: null,
+            step: 2,
+            slot: null,
+            seats: [],
+          });
+        }
+
+        if (
+          currentDate &&
+          new Date(currentDate).toLocaleDateString() ===
+            selectedDate?.toLocaleDateString()
+        ) {
+          return;
+        }
+
+        // New date → reset slot and seats
+        set({
+          date: selectedDate,
+          step: 3,
+          slot: null,
+          seats: [],
+        });
+      },
+
+      setSlot: (slot) => {
+        const { slot: currentSlot } = get();
+        if (currentSlot === slot) return;
+        set({ slot, step: 4, seats: [] });
+      },
 
       addSeat: (seat) =>
         set((state) => {
-          // prevent duplicate seats
           const alreadySelected = state.seats.some((s) => s._id === seat._id);
           if (alreadySelected) return state;
           return { seats: [...state.seats, seat], step: 5 };
@@ -49,17 +95,22 @@ export const useBookingStore = create<BookingState>()(
         set({
           movie: null,
           date: null,
-          showtime: null,
+          slot: null,
           seats: [],
           step: 1,
         }),
     }),
     {
-      name: "booking-storage", // key in AsyncStorage/localStorage
+      name: "booking-storage",
       storage: {
         getItem: async (name) => {
           const value = await AsyncStorage.getItem(name);
-          return value ? JSON.parse(value) : null;
+          if (!value) return null;
+          const parsed = JSON.parse(value);
+          return {
+            ...parsed,
+            date: parsed.date ? new Date(parsed.date) : null,
+          };
         },
         setItem: async (name, value) => {
           await AsyncStorage.setItem(name, JSON.stringify(value));

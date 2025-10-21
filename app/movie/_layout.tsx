@@ -23,7 +23,12 @@ export default function MovieLayout() {
         name="[id]"
         options={{
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity
+              onPress={() => {
+                if (router.canGoBack()) router.back();
+                else router.push("/");
+              }}
+            >
               <Ionicons name="arrow-back" size={18} color="black" />
             </TouchableOpacity>
           ),

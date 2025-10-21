@@ -3,11 +3,12 @@ import { movieKeys } from "@/api/movie/movieKeys";
 import { fetchShowtimes } from "@/api/showtime/showtime";
 import ShowDay from "@/components/Movie/ShowDay";
 import Showtime from "@/components/Movie/Showtime";
+import TheaterPicker from "@/components/Movie/TheaterPicker";
 import { Slots } from "@/constants/showtime";
 import { useBookingStore } from "@/store/bookingStore";
 import { Show } from "@/types/show";
 import { useQuery } from "@tanstack/react-query";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -21,16 +22,10 @@ import {
 export default function MovieDetail() {
   const { id } = useLocalSearchParams();
   const movieId = Array.isArray(id) ? id[0] : id;
+
   const [canBookSeat, setCanBookSeat] = useState(false);
 
-  const {
-    movie,
-    showtime,
-    step,
-    setMovie,
-    setDate,
-    setShowtime: setSlot,
-  } = useBookingStore();
+  const { movie, slot, date, setMovie, setDate, setSlot } = useBookingStore();
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -54,42 +49,51 @@ export default function MovieDetail() {
   }, [data, setMovie]);
 
   useEffect(() => {
+    if (!date) return;
+
+    const storedDate = new Date(date);
+    const today = new Date();
+
+    // Compare only the date part, not time
+    const storedDay = new Date(storedDate.toLocaleDateString()).getTime();
+    const todayDay = new Date(today.toLocaleDateString()).getTime();
+
+    if (storedDay < todayDay) {
+      setDate(null);
+    }
+  }, [date, setDate]);
+
+  useEffect(() => {
     if (selectedDate) setDate(selectedDate);
   }, [selectedDate, setDate]);
 
   useEffect(() => {
-    if (!movie || !showtimes) return;
-
-    // ✅ Check if the showtime in store is valid for this date
-    const hasShowtimeForDate =
-      showtime && showtimes.some((show: Show) => show.slot === showtime);
-
-    // ✅ Sync local slot with valid store showtime
-    if (hasShowtimeForDate) {
-      setSelectedSlot(showtime);
-    } else {
-      setSelectedSlot(null);
-    }
-
-    // ✅ Decide if the user can book a seat
-    const canProceed =
-      !!movie &&
-      !!selectedDate &&
-      !!showtime &&
-      hasShowtimeForDate &&
-      step >= 3; // or step === 4, depending on your flow
-
-    setCanBookSeat(canProceed);
-  }, [movie, showtime, showtimes, selectedDate, step]);
+    if (slot) setSelectedSlot(slot);
+  }, [slot]);
 
   const handleSelectDate = useCallback(
     (date: Date) => {
-      setSelectedSlot("");
       setSelectedDate(date);
+      setSelectedSlot(null);
       setDate(date);
     },
     [setDate]
   );
+
+  useEffect(() => {
+    if (!movie || !showtimes) {
+      setCanBookSeat(false);
+      return;
+    }
+
+    const hasShowtimeForDate =
+      selectedSlot &&
+      showtimes.some((show: Show) => show.slot === selectedSlot);
+
+    setCanBookSeat(
+      !!selectedSlot && !!movie && !!selectedDate && hasShowtimeForDate
+    );
+  }, [selectedSlot, movie, selectedDate, showtimes]);
 
   const handleSelectSlot = useCallback(
     (slot: string) => {
@@ -129,7 +133,10 @@ export default function MovieDetail() {
       {/*Step 2: Date picker */}
       <ShowDay selectedDate={selectedDate} onSelect={handleSelectDate} />
 
-      {/*Step 3: Time Slots */}
+      {/* Step 3: Theater picker */}
+      <TheaterPicker />
+
+      {/*Step 4: Time Slots */}
       {showtimeLoading ? (
         <ActivityIndicator size="small" className="mt-4" />
       ) : (
@@ -140,9 +147,12 @@ export default function MovieDetail() {
         />
       )}
 
-      {/*Step 4: Goto Seat Booking page and select seats */}
+      {/*Step 5: Goto Seat Booking page and select seats */}
       {canBookSeat && (
-        <TouchableOpacity className="mt-2 p-2 rounded-md bg-black">
+        <TouchableOpacity
+          className="mt-2 p-2 rounded-md bg-black"
+          onPress={() => router.push(`/seat?movieId=${movie?._id}showId=`)}
+        >
           <Text className="text-white text-center">Select seats</Text>
         </TouchableOpacity>
       )}

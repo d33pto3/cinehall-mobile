@@ -1,4 +1,5 @@
 import { Movie } from "@/schemas/movieSchema";
+import { Hall } from "@/types/hall";
 import { Seat } from "@/types/seat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
@@ -6,6 +7,7 @@ import { persist } from "zustand/middleware";
 
 interface BookingState {
   movie: Movie | null;
+  hall: Hall | null;
   date: Date | null;
   slot: string | null;
   seats: Seat[];
@@ -25,6 +27,7 @@ export const useBookingStore = create<BookingState>()(
       movie: null,
       date: null,
       slot: null,
+      hall: null,
       seats: [],
       step: 1,
 

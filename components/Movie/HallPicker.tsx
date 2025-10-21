@@ -1,12 +1,12 @@
 import React from "react";
 import { Text, View } from "react-native";
 
-const TheaterPicker = () => {
+const HallPicker = () => {
   return (
     <View>
-      <Text>TheaterPicker</Text>
+      <Text>Hall Picker</Text>
     </View>
   );
 };
 
-export default TheaterPicker;
+export default HallPicker;

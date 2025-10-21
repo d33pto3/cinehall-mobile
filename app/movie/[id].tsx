@@ -1,9 +1,9 @@
 import { getMovie } from "@/api/movie/movie";
 import { movieKeys } from "@/api/movie/movieKeys";
 import { fetchShowtimes } from "@/api/showtime/showtime";
+import HallPicker from "@/components/Movie/HallPicker";
 import ShowDay from "@/components/Movie/ShowDay";
 import Showtime from "@/components/Movie/Showtime";
-import TheaterPicker from "@/components/Movie/TheaterPicker";
 import { Slots } from "@/constants/showtime";
 import { useBookingStore } from "@/store/bookingStore";
 import { Show } from "@/types/show";
@@ -25,7 +25,8 @@ export default function MovieDetail() {
 
   const [canBookSeat, setCanBookSeat] = useState(false);
 
-  const { movie, slot, date, setMovie, setDate, setSlot } = useBookingStore();
+  const { movie, slot, date, step, setMovie, setDate, setSlot } =
+    useBookingStore();
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -117,6 +118,8 @@ export default function MovieDetail() {
       </View>
     );
 
+  console.log(step);
+
   return (
     <ScrollView className="flex-1 px-4">
       {/* Step 1: Selected Movie */}
@@ -134,7 +137,7 @@ export default function MovieDetail() {
       <ShowDay selectedDate={selectedDate} onSelect={handleSelectDate} />
 
       {/* Step 3: Theater picker */}
-      <TheaterPicker />
+      <HallPicker />
 
       {/*Step 4: Time Slots */}
       {showtimeLoading ? (

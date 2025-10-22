@@ -35,7 +35,7 @@ export const useBookingStore = create<BookingState>()(
         const { movie: currentMovie } = get();
 
         // If same movie → do nothing
-        if (currentMovie?._id === movie._id) return;
+        if (currentMovie?._id === movie?._id) return;
 
         // New movie → reset dependent fields
         set({

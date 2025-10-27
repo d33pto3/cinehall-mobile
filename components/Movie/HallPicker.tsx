@@ -26,19 +26,22 @@ const HallPicker = ({ movieId, date }: { movieId: string; date: Date }) => {
     setHall(id);
   };
 
-  console.log(currentHallId);
+  console.log("halls", halls);
 
   useEffect(() => {
-    if (currentHallId)
-      setSelectedHallName(
-        halls.find((hall: Hall) => hall._id === currentHallId).name
+    if (currentHallId && halls) {
+      const selectedHall = halls.find(
+        (hall: Hall) => hall._id === currentHallId
       );
-    else setSelectedHallName("");
-  }, [currentHallId, halls, setHall]);
+      setSelectedHallName(selectedHall?.name || "");
+    } else {
+      setSelectedHallName("");
+    }
+  }, [currentHallId, halls]);
 
   return (
     <View className="mt-2">
-      {halls && halls.length > 0 ? (
+      {halls && halls?.length > 0 ? (
         <>
           <View
             className="w-[50%] flex flex-row items-center gap-2 relative"
@@ -47,7 +50,7 @@ const HallPicker = ({ movieId, date }: { movieId: string; date: Date }) => {
             <Text>Halls:</Text>
             <View className="flex-1" style={{ zIndex: 20 }}>
               <Select
-                options={halls.map((hall: Hall) => ({
+                options={halls?.map((hall: Hall) => ({
                   key: hall._id,
                   text: hall.name,
                 }))}

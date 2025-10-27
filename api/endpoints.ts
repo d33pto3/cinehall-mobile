@@ -6,5 +6,6 @@ export const ENDPOINTS = {
   SHOWTIME: "/show",
   HALL: "/hall",
   HALL_BY_MOVIE: "/hall/by-movie",
+  SCREEN_BY_MOVIE: "/screen/by-movie-hall-date",
   MOVIE_DETAIL: (id: number) => `/movie/${id}`,
 };

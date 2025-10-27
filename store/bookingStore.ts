@@ -1,5 +1,4 @@
 import { Movie } from "@/schemas/movieSchema";
-import { Hall } from "@/types/hall";
 import { Seat } from "@/types/seat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
@@ -7,7 +6,7 @@ import { persist } from "zustand/middleware";
 
 interface BookingState {
   movie: Movie | null;
-  hall: Hall | null;
+  hallId: string | null;
   date: Date | null;
   slot: string | null;
   seats: Seat[];
@@ -15,6 +14,7 @@ interface BookingState {
 
   setMovie: (movie: Movie) => void;
   setDate: (date: Date | null) => void;
+  setHall: (hallId: string | null) => void;
   setSlot: (slot: string) => void;
   addSeat: (seat: Seat) => void;
   removeSeat: (seatId: string) => void;
@@ -27,7 +27,7 @@ export const useBookingStore = create<BookingState>()(
       movie: null,
       date: null,
       slot: null,
-      hall: null,
+      hallId: null,
       seats: [],
       step: 1,
 
@@ -40,10 +40,11 @@ export const useBookingStore = create<BookingState>()(
         // New movie → reset dependent fields
         set({
           movie,
-          step: 2,
           date: null,
+          hallId: null,
           slot: null,
           seats: [],
+          step: 2,
         });
       },
 
@@ -53,9 +54,10 @@ export const useBookingStore = create<BookingState>()(
         if (!selectedDate) {
           return set({
             date: null,
-            step: 2,
+            hallId: null,
             slot: null,
             seats: [],
+            step: 2,
           });
         }
 
@@ -70,10 +72,19 @@ export const useBookingStore = create<BookingState>()(
         // New date → reset slot and seats
         set({
           date: selectedDate,
-          step: 3,
+          hallId: null,
           slot: null,
           seats: [],
+          step: 3,
         });
+      },
+
+      // set Hall
+      setHall: (selectedHall) => {
+        const { hallId: currentHall } = get();
+        if (selectedHall === currentHall) return;
+        console.log(selectedHall);
+        set({ hallId: selectedHall, step: 4, slot: null });
       },
 
       setSlot: (slot) => {

@@ -125,7 +125,7 @@ export default function MovieDetail() {
       </View>
     );
 
-  console.log(step, currentMovie?.title);
+  // console.log(step, currentMovie?.title);
 
   return (
     <ScrollView className="flex-1 px-4">
@@ -144,7 +144,7 @@ export default function MovieDetail() {
       <ShowDay selectedDate={selectedDate} onSelect={handleSelectDate} />
 
       {/* Step 3: Theater picker */}
-      <HallPicker />
+      <HallPicker movieId={movieId} date={selectedDate} />
 
       {/*Step 4: Time Slots */}
       {/* {showtimeLoading ? (

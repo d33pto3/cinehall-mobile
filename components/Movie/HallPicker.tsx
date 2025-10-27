@@ -1,43 +1,68 @@
-import React, { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { getHallsByMovieAndDate } from "@/api/hall";
+import { useBookingStore } from "@/store/bookingStore";
+import { Hall } from "@/types/hall";
+import { useQuery } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
+import { Text, View } from "react-native";
+import Select from "../ui/custom/select";
 
-const HallPicker = () => {
-  const [showOptions, setShowOptions] = useState(false);
-  const [placeholder, setPlaceholder] = useState("Select Hall");
+const HallPicker = ({ movieId, date }: { movieId: string; date: Date }) => {
+  const [hallName, setSelectedHallName] = useState<string | null>(null);
+
+  const { setHall, hallId: currentHallId } = useBookingStore();
+
+  const {
+    data: halls,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["halls", movieId, date],
+    queryFn: () => getHallsByMovieAndDate(movieId, date),
+    retry: 2,
+  });
+
+  const handleSelect = (id: string) => {
+    setHall(id);
+  };
+
+  console.log(currentHallId);
+
+  useEffect(() => {
+    if (currentHallId)
+      setSelectedHallName(
+        halls.find((hall: Hall) => hall._id === currentHallId).name
+      );
+    else setSelectedHallName("");
+  }, [currentHallId, halls, setHall]);
 
   return (
     <View className="mt-2">
-      <Text>Halls:</Text>
-
-      <View className="relative">
-        <TouchableOpacity
-          className="relative w-[30%] rounded-sm border-[1px] mt-1"
-          onPress={() => {
-            setShowOptions((prev) => !prev);
-          }}
-        >
-          <Text className="p-1 border-sm">{placeholder}</Text>
-          <Text className="absolute top-[50%] -translate-y-1/2 right-1">v</Text>
-        </TouchableOpacity>
-        {showOptions && (
-          <View className="absolute top-[100%] flex gap-1 border-x-[1px] rounded-tl-sm rounded-tr-sm w-[30%]">
-            <TouchableOpacity
-              className="border-b-[1px] p-1"
-              onPress={() => setPlaceholder("Option 1")}
-            >
-              <Text>Option 1</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="border-b-[1px] p-1">
-              <Text>Option 2</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="border-b-[1px] p-1">
-              <Text>Option 3</Text>
-            </TouchableOpacity>
+      {halls && halls.length > 0 ? (
+        <>
+          <View
+            className="w-[50%] flex flex-row items-center gap-2 relative"
+            style={{ zIndex: 10 }}
+          >
+            <Text>Halls:</Text>
+            <View className="flex-1" style={{ zIndex: 20 }}>
+              <Select
+                options={halls.map((hall: Hall) => ({
+                  key: hall._id,
+                  text: hall.name,
+                }))}
+                onSelect={handleSelect}
+              />
+            </View>
           </View>
-        )}
-      </View>
 
-      <Text>ABCD</Text>
+          <View className="mt-2 py-1">
+            <Text>Selected Hall: {hallName || "None"}</Text>
+          </View>
+        </>
+      ) : (
+        <Text>No shows</Text>
+      )}
     </View>
   );
 };

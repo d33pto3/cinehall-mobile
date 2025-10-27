@@ -7,6 +7,7 @@ import { persist } from "zustand/middleware";
 interface BookingState {
   movie: Movie | null;
   hallId: string | null;
+  screenId: string | null;
   date: Date | null;
   slot: string | null;
   seats: Seat[];
@@ -15,6 +16,7 @@ interface BookingState {
   setMovie: (movie: Movie) => void;
   setDate: (date: Date | null) => void;
   setHall: (hallId: string | null) => void;
+  setScreen: (screenId: string | null) => void;
   setSlot: (slot: string) => void;
   addSeat: (seat: Seat) => void;
   removeSeat: (seatId: string) => void;
@@ -28,6 +30,7 @@ export const useBookingStore = create<BookingState>()(
       date: null,
       slot: null,
       hallId: null,
+      screenId: null,
       seats: [],
       step: 1,
 
@@ -55,6 +58,7 @@ export const useBookingStore = create<BookingState>()(
           return set({
             date: null,
             hallId: null,
+            screenId: null,
             slot: null,
             seats: [],
             step: 2,
@@ -73,18 +77,25 @@ export const useBookingStore = create<BookingState>()(
         set({
           date: selectedDate,
           hallId: null,
+          screenId: null,
           slot: null,
           seats: [],
           step: 3,
         });
       },
 
-      // set Hall
+      // step 4: set Hall
       setHall: (selectedHall) => {
         const { hallId: currentHall } = get();
         if (selectedHall === currentHall) return;
-        console.log(selectedHall);
-        set({ hallId: selectedHall, step: 4, slot: null });
+        set({ hallId: selectedHall, screenId: null, step: 4, slot: null });
+      },
+
+      // step 5: set Screen
+      setScreen: (selectedScreen) => {
+        const { screenId: currentScreen } = get();
+        if (selectedScreen === currentScreen) return;
+        set({ screenId: selectedScreen, slot: null, step: 5 });
       },
 
       setSlot: (slot) => {

@@ -2,6 +2,7 @@ import { getMovie } from "@/api/movie/movie";
 import { movieKeys } from "@/api/movie/movieKeys";
 import { fetchShowtimes } from "@/api/showtime/showtime";
 import HallPicker from "@/components/Movie/HallPicker";
+import ScreenPicker from "@/components/Movie/ScreenPicker";
 import ShowDay from "@/components/Movie/ShowDay";
 import { useBookingStore } from "@/store/bookingStore";
 import { useQuery } from "@tanstack/react-query";
@@ -17,6 +18,7 @@ export default function MovieDetail() {
 
   const {
     movie: currentMovie,
+    hallId: currentHallId,
     slot,
     date,
     step,
@@ -125,7 +127,7 @@ export default function MovieDetail() {
       </View>
     );
 
-  // console.log(step, currentMovie?.title);
+  console.log(step, currentMovie?.title, currentHallId);
 
   return (
     <ScrollView className="flex-1 px-4">
@@ -143,8 +145,17 @@ export default function MovieDetail() {
       {/*Step 2: Date picker */}
       <ShowDay selectedDate={selectedDate} onSelect={handleSelectDate} />
 
-      {/* Step 3: Theater picker */}
+      {/* Step 3: Hall picker */}
       <HallPicker movieId={movieId} date={selectedDate} />
+
+      {/* Step 4: Screen Picker */}
+      {step === 4 && currentHallId && (
+        <ScreenPicker
+          hallId={currentHallId}
+          movieId={movieId}
+          date={selectedDate}
+        />
+      )}
 
       {/*Step 4: Time Slots */}
       {/* {showtimeLoading ? (

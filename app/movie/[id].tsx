@@ -4,31 +4,42 @@ import { fetchShowtimes } from "@/api/showtime/showtime";
 import HallPicker from "@/components/Movie/HallPicker";
 import ScreenPicker from "@/components/Movie/ScreenPicker";
 import ShowDay from "@/components/Movie/ShowDay";
+import Showtime from "@/components/Movie/Showtime";
+import { Slots } from "@/constants/showtime";
 import { useBookingStore } from "@/store/bookingStore";
+import { Show } from "@/types/show";
 import { useQuery } from "@tanstack/react-query";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function MovieDetail() {
   const { id } = useLocalSearchParams();
   const movieId = Array.isArray(id) ? id[0] : id;
 
   const [canBookSeat, setCanBookSeat] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const {
     movie: currentMovie,
     hallId: currentHallId,
+    screenId: currentScreenId,
     slot,
     date,
     step,
     setMovie,
     setDate,
-    // setSlot,
+    setSlot,
+    setShow,
   } = useBookingStore();
-
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  // const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
 
   // Fetch movie details
   const {
@@ -76,42 +87,52 @@ export default function MovieDetail() {
   }, [selectedDate, setDate]);
 
   // set the slot in react state
-  // useEffect(() => {
-  //   if (slot) setSelectedSlot(slot);
-  // }, [slot]);
+  useEffect(() => {
+    if (slot) setSelectedSlot(slot);
+  }, [slot]);
 
   // select date handler function
   const handleSelectDate = useCallback(
     (date: Date) => {
       setSelectedDate(date);
-      // setSelectedSlot(null);
+      setSelectedSlot(null);
       setDate(date);
     },
     [setDate]
   );
 
-  // useEffect(() => {
-  //   if (!currentMovie || !showtimes) {
-  //     setCanBookSeat(false);
-  //     return;
-  //   }
+  useEffect(() => {
+    if (!currentMovie || !showtimes) {
+      setCanBookSeat(false);
+      return;
+    }
 
-  //   const hasShowtimeForDate =
-  //     selectedSlot &&
-  //     showtimes.some((show: Show) => show.slot === selectedSlot);
+    const hasShowtimeForDate =
+      selectedSlot &&
+      showtimes.some((show: Show) => show.slot === selectedSlot);
 
-  //   setCanBookSeat(
-  //     !!selectedSlot && !!currentMovie && !!selectedDate && hasShowtimeForDate
-  //   );
-  // }, [selectedSlot, currentMovie, selectedDate, showtimes]);
+    setCanBookSeat(
+      !!selectedSlot && !!currentMovie && !!selectedDate && hasShowtimeForDate
+    );
+  }, [selectedSlot, currentMovie, selectedDate, showtimes]);
 
-  // const handleSelectSlot = useCallback(
-  //   (slot: string) => {
-  //     setSelectedSlot(slot);
-  //     setSlot(slot);
-  //   },
-  //   [setSlot]
-  // );
+  const handleSelectSlot = useCallback(
+    (slot: string) => {
+      setSelectedSlot(slot);
+      setSlot(slot);
+    },
+    [setSlot]
+  );
+
+  const handleProceedToSeat = useCallback(() => {
+    const selectedShow = showtimes?.find(
+      (show: Show) => show.slot === selectedSlot
+    );
+    if (!selectedShow) return;
+
+    setShow(selectedShow._id);
+    router.push(`/seat/${selectedShow._id}?screenId=${currentScreenId}`);
+  }, [showtimes, selectedSlot, setShow, currentScreenId]);
 
   if (isLoading)
     return (
@@ -126,8 +147,6 @@ export default function MovieDetail() {
         <Text>Error loading movie details.</Text>
       </View>
     );
-
-  console.log(step, currentMovie?.title, currentHallId);
 
   return (
     <ScrollView className="flex-1 px-4">
@@ -149,7 +168,7 @@ export default function MovieDetail() {
       <HallPicker movieId={movieId} date={selectedDate} />
 
       {/* Step 4: Screen Picker */}
-      {step === 4 && currentHallId && (
+      {step >= 4 && currentHallId && (
         <ScreenPicker
           hallId={currentHallId}
           movieId={movieId}
@@ -157,28 +176,27 @@ export default function MovieDetail() {
         />
       )}
 
-      {/*Step 4: Time Slots */}
-      {/* {showtimeLoading ? (
-        <ActivityIndicator size="small" className="mt-4" />
-      ) : (
-        <Showtime
-          selectedSlot={selectedSlot as keyof typeof Slots}
-          showtimes={showtimes}
-          onSelect={handleSelectSlot}
-        />
-      )} */}
+      {/*Step 5: Time Slots */}
+      {step >= 5 &&
+        (showtimeLoading ? (
+          <ActivityIndicator size="small" className="mt-4" />
+        ) : (
+          <Showtime
+            selectedSlot={selectedSlot as keyof typeof Slots}
+            showtimes={showtimes}
+            onSelect={handleSelectSlot}
+          />
+        ))}
 
-      {/*Step 5: Goto Seat Booking page and select seats */}
-      {/* {canBookSeat && (
+      {/*Step 6: Goto Seat Booking page and select seats */}
+      {canBookSeat && step >= 6 && (
         <TouchableOpacity
           className="mt-2 p-2 rounded-md bg-black"
-          onPress={() =>
-            router.push(`/seat?movieId=${currentMovie?._id}showId=`)
-          }
+          onPress={handleProceedToSeat}
         >
           <Text className="text-white text-center">Select seats</Text>
         </TouchableOpacity>
-      )} */}
+      )}
     </ScrollView>
   );
 }

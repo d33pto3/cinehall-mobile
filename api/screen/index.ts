@@ -20,3 +20,12 @@ export const getScreensByHallMovieAndDate = async (
     throw err;
   }
 };
+
+export const getScreen = async (screenId: string) => {
+  try {
+    const response = await api.get(ENDPOINTS.GET_SCREEN(screenId));
+    return response.data.data;
+  } catch (err) {
+    throw err;
+  }
+};

@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
 
-export default function MovieLayout() {
+export default function SeatLayout() {
   const router = useRouter();
   //   const { id } = useLocalSearchParams();
   //   const movieId = Array.isArray(id) ? id[0] : id;
@@ -16,7 +16,7 @@ export default function MovieLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="[id]"
+        name="[showId]"
         options={{
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>

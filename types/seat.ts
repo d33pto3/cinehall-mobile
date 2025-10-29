@@ -7,6 +7,6 @@ export interface Seat {
   column: number;
   status?: "AVAILABLE" | "BOOKED" | "HELD";
   heldBy?: string | null;
-  isHeld: boolean;
-  heldUntil?: Date | null;
+  isHeld: boolean | null;
+  heldUntil?: string | null;
 }

@@ -3,10 +3,20 @@ import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ToastManager from "toastify-react-native";
 
+import { getOrCreateGuestId } from "@/utility/guestUtils";
+import { useEffect } from "react";
 import "./global.css";
 
 export default function RootLayout() {
   const queryClient = new QueryClient();
+
+  useEffect(() => {
+    const setupGuestId = async () => {
+      await getOrCreateGuestId();
+    };
+    setupGuestId();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaView style={{ flex: 1 }}>

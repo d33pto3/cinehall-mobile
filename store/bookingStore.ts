@@ -22,7 +22,22 @@ interface BookingState {
   setSlot: (slot: string) => void;
   addSeat: (seat: Seat) => void;
   removeSeat: (seatId: string) => void;
+  clearSeats: () => void;
   resetBooking: () => void;
+  getBookingSummary: () => BookingSummary | null;
+  isBookingComplete: () => boolean;
+}
+
+interface BookingSummary {
+  movie: Movie;
+  date: Date;
+  hallId: string;
+  screenId: string;
+  slot: string;
+  showId: string;
+  seats: Seat[];
+  totalSeats: number;
+  seatNumbers: string;
 }
 
 export const useBookingStore = create<BookingState>()(
@@ -154,16 +169,73 @@ export const useBookingStore = create<BookingState>()(
       removeSeat: (seatId) =>
         set((state) => ({
           seats: state.seats.filter((s) => s._id !== seatId),
+          // If no seats left, go back to step 7
+          step:
+            state.seats.filter((s) => s._id !== seatId).length === 0
+              ? 7
+              : state.step,
         })),
+
+      clearSeats: () =>
+        set({
+          seats: [],
+          step: 7,
+        }),
 
       resetBooking: () =>
         set({
           movie: null,
           date: null,
+          hallId: null,
+          screenId: null,
           slot: null,
+          showId: null,
           seats: [],
           step: 1,
         }),
+
+      // Helper: Get complete booking summary
+      getBookingSummary: () => {
+        const state = get();
+
+        if (
+          !state.movie ||
+          !state.date ||
+          !state.hallId ||
+          !state.screenId ||
+          !state.slot ||
+          !state.showId ||
+          state.seats.length === 0
+        ) {
+          return null;
+        }
+
+        return {
+          movie: state.movie,
+          date: state.date,
+          hallId: state.hallId,
+          screenId: state.screenId,
+          slot: state.slot,
+          showId: state.showId,
+          seats: state.seats,
+          totalSeats: state.seats.length,
+          seatNumbers: state.seats.map((s) => s.seatNumber).join(", "),
+        };
+      },
+
+      // Helper: Check if booking is complete
+      isBookingComplete: () => {
+        const state = get();
+        return (
+          !!state.movie &&
+          !!state.date &&
+          !!state.hallId &&
+          !!state.screenId &&
+          !!state.slot &&
+          !!state.showId &&
+          state.seats.length > 0
+        );
+      },
     }),
     {
       name: "booking-storage",

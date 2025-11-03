@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/store/authStore";
 import { useBookingStore } from "@/store/bookingStore";
 import { router } from "expo-router";
 import { useEffect } from "react";
@@ -13,6 +14,10 @@ import {
 export default function Payment() {
   const { getBookingSummary, isBookingComplete, resetBooking } =
     useBookingStore();
+
+  const { isLoggedIn, user } = useAuthStore();
+
+  console.log(isLoggedIn);
 
   const bookingSummary = getBookingSummary();
 
@@ -30,7 +35,7 @@ export default function Payment() {
         ]
       );
     }
-  }, []);
+  }, [isBookingComplete]);
 
   if (!bookingSummary) {
     return (

@@ -13,4 +13,5 @@ export const ENDPOINTS = {
   RELEASE_SEATS: (showId: string) => `/seat/shows/${showId}/release`,
   BOOK_SEATS: (showId: string) => `/seat/shows/${showId}/book`,
   MOVIE_DETAIL: (id: number) => `/movie/${id}`,
+  CREATE_BOOKING: "/booking",
 };

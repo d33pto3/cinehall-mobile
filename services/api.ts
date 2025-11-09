@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { router } from "expo-router";
 
@@ -11,6 +12,19 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+});
+
+// ✅ Attach token from AsyncStorage (before every request)
+api.interceptors.request.use(async (config) => {
+  const storedData = await AsyncStorage.getItem("auth-storage");
+  if (storedData) {
+    const parsed = JSON.parse(storedData);
+    const token = parsed?.state?.user?.token; // adjust based on your store
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
 });
 
 // TODO: Interceptors for auth tokens, logging, etc

@@ -1,10 +1,9 @@
+import { getOrCreateGuestId } from "@/utility/guestUtils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
+import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ToastManager from "toastify-react-native";
-
-import { getOrCreateGuestId } from "@/utility/guestUtils";
-import { useEffect } from "react";
 import "./global.css";
 
 export default function RootLayout() {

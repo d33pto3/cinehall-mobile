@@ -1,3 +1,5 @@
+import { ENDPOINTS } from "@/api/endpoints";
+import api from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import { useBookingStore } from "@/store/bookingStore";
 import { router } from "expo-router";
@@ -16,8 +18,6 @@ export default function Payment() {
     useBookingStore();
 
   const { isLoggedIn, user } = useAuthStore();
-
-  console.log(isLoggedIn);
 
   const bookingSummary = getBookingSummary();
 
@@ -46,7 +46,25 @@ export default function Payment() {
   }
 
   const handleConfirmBooking = async () => {
+    if (!isLoggedIn) {
+      router.replace("/(auth)/login");
+      return;
+    }
     try {
+      const payload = {
+        userId: user?._id,
+        showId: bookingSummary.showId,
+        screenId: bookingSummary.screenId,
+        movieId: bookingSummary.movie._id,
+        seats: bookingSummary.seats.map((s) => s._id),
+        totalPrice: bookingSummary.totalSeats * 400,
+        paymentMethod: "card",
+      };
+
+      const response = await api.post(ENDPOINTS.CREATE_BOOKING, payload);
+
+      console.log("response-----", response);
+
       // TODO: Call your payment/booking API here
       // await bookSeats(bookingSummary.showId, bookingSummary.seats.map(s => s._id), userId);
 

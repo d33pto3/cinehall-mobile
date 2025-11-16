@@ -1,4 +1,5 @@
 import { getSeats, holdSeats, releaseSeats } from "@/api/seats";
+import { useAuthStore } from "@/store/authStore";
 import { useBookingStore } from "@/store/bookingStore";
 import { getOrCreateGuestId } from "@/utility/guestUtils";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -25,17 +26,22 @@ export default function Seats() {
   const showId =
     (Array.isArray(queryShowId) ? queryShowId[0] : queryShowId) || storeShowId;
 
+  const { isLoggedIn, user } = useAuthStore();
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]); // Current user's selections
 
   // Get or create guest ID on mount
   useEffect(() => {
     const initGuestId = async () => {
-      const guestId = await getOrCreateGuestId();
-      setCurrentUserId(guestId);
+      if (isLoggedIn && user?._id) {
+        setCurrentUserId(user._id);
+      } else {
+        const guestId = await getOrCreateGuestId();
+        setCurrentUserId(guestId);
+      }
     };
     initGuestId();
-  }, []);
+  }, [isLoggedIn, user?._id]);
 
   const {
     data: seatsData,

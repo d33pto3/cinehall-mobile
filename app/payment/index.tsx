@@ -19,6 +19,8 @@ export default function Payment() {
 
   const { isLoggedIn, user } = useAuthStore();
 
+  console.log(user);
+
   const bookingSummary = getBookingSummary();
 
   // Redirect if booking is incomplete

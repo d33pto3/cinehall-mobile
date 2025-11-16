@@ -393,12 +393,12 @@ export default function Seats() {
 
           <TouchableOpacity
             onPress={() => {
-              router.replace("/payment");
+              router.replace("/booking");
             }}
             className="bg-blue-600 py-4 rounded-xl items-center shadow-sm"
           >
             <Text className="text-white text-base font-bold">
-              Continue to Payment
+              Continue to Booking
             </Text>
           </TouchableOpacity>
         </View>

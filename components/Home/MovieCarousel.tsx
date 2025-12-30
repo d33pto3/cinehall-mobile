@@ -42,17 +42,18 @@ export default function MovieCarousel({
         height: CAROUSEL_HEIGHT,
         justifyContent: "center",
         alignItems: "center",
-        // borderBottomColor: "#000",
-        paddingTop: insets.top,
+        borderBottomWidth: 1,
+        borderBottomColor: "#2E2E2E",
+        backgroundColor: "#1A1A1A",
       }}
       className="grow-0"
     >
       {/* Loading State */}
-      {isLoading && <ActivityIndicator size="large" color="#000" />}
+      {isLoading && <ActivityIndicator size="large" color="#FAAA47" />}
 
       {/* Error State */}
       {isError && (
-        <Text style={{ color: "red", fontSize: 16, textAlign: "center" }}>
+        <Text className="text-red-500 text-center font-medium">
           Failed to load movies.
         </Text>
       )}
@@ -66,6 +67,8 @@ export default function MovieCarousel({
           data={urls}
           onProgressChange={progress}
           loop
+          autoPlay={true}
+          autoPlayInterval={3000}
           renderItem={({ index, item }) => (
             <View
               key={index}

@@ -22,18 +22,18 @@ const ShowDay = ({ selectedDate, onSelect }: ShowDayProps) => {
           <TouchableOpacity
             key={index}
             onPress={() => onSelect(date)} // ✅ store full date
-            className={`flex items-center p-2 rounded-md ${
-              isSelected ? "bg-black" : "bg-gray-50"
+            className={`flex items-center justify-center w-16 h-16 rounded-2xl border ${
+              isSelected ? "bg-primary border-primary" : "bg-card border-border"
             }`}
           >
             <Text
-              className={`font-semibold text-sm ${
-                isSelected ? "text-white" : "text-black"
+              className={`font-black text-lg ${
+                isSelected ? "text-black" : "text-white"
               }`}
             >
               {date.getDate()}
             </Text>
-            <Text className={`${isSelected ? "text-white" : "text-gray-700"}`}>
+            <Text className={`text-[10px] uppercase font-bold ${isSelected ? "text-black" : "text-muted"}`}>
               {weekday}
             </Text>
           </TouchableOpacity>

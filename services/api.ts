@@ -3,7 +3,12 @@ import axios from "axios";
 import { router } from "expo-router";
 
 // TODO: move to .env
-const API_BASE_URL = "http://10.15.5.153:8000/api/v1";
+import { Platform } from "react-native";
+
+// TODO: move to .env
+const API_BASE_URL = Platform.OS === "web" 
+  ? "http://localhost:8000/api/v1" 
+  : "http://10.15.5.153:8000/api/v1";
 
 const api = axios.create({
   baseURL: API_BASE_URL,

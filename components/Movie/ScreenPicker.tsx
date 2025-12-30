@@ -56,7 +56,7 @@ const ScreenPicker = ({
             className="w-[50%] flex flex-row items-center gap-2 relative"
             style={{ zIndex: 10 }}
           >
-            <Text>Screens:</Text>
+            <Text className="text-white">Screens:</Text>
             <View className="flex-1" style={{ zIndex: 20 }}>
               <Select
                 options={screens.map((screen: Screen) => ({
@@ -68,8 +68,9 @@ const ScreenPicker = ({
             </View>
           </View>
 
-          <View className="mt-2 py-1">
-            <Text>Selected Screen: {screenName || "None"}</Text>
+          <View className="mt-4 py-1 flex-row items-center gap-2">
+            <Text className="text-muted">Selected:</Text>
+            <Text className="text-primary font-bold">{screenName || "None"}</Text>
           </View>
         </>
       )}

@@ -5,7 +5,7 @@ import { getOrCreateGuestId } from "@/utility/guestUtils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 
 interface Seat {
   _id: string;
@@ -182,10 +182,10 @@ export default function Seats() {
 
       if (status === "booked" || status === "blocked") {
         return {
-          bg: "bg-gray-500",
-          border: "border-gray-600",
-          text: "text-white",
-          opacity: "opacity-60",
+          bg: "bg-neutral-800",
+          border: "border-neutral-900",
+          text: "text-neutral-500",
+          opacity: "opacity-40",
           disabled: true,
         };
       }
@@ -193,10 +193,10 @@ export default function Seats() {
       if (status === "held") {
         // Held by other users
         return {
-          bg: "bg-orange-400",
-          border: "border-orange-500",
-          text: "text-white",
-          opacity: "opacity-70",
+          bg: "bg-red-500/20",
+          border: "border-red-500/50",
+          text: "text-red-500",
+          opacity: "opacity-100",
           disabled: true,
         };
       }
@@ -204,9 +204,9 @@ export default function Seats() {
       if (status === "selected") {
         // Selected by current user
         return {
-          bg: "bg-blue-500",
-          border: "border-blue-600",
-          text: "text-white",
+          bg: "bg-primary",
+          border: "border-primary",
+          text: "text-black",
           opacity: "opacity-100",
           disabled: false,
         };
@@ -214,9 +214,9 @@ export default function Seats() {
 
       // Available
       return {
-        bg: "bg-gray-200",
-        border: "border-gray-300",
-        text: "text-gray-600",
+        bg: "bg-card",
+        border: "border-border",
+        text: "text-white",
         opacity: "opacity-100",
         disabled: false,
       };
@@ -237,22 +237,22 @@ export default function Seats() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <View className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        <Text className="text-lg mt-4 text-gray-600">Loading seats...</Text>
+      <View className="flex-1 justify-center items-center bg-background">
+        <ActivityIndicator size="large" color="#FAAA47" />
+        <Text className="text-lg mt-4 text-muted font-bold italic tracking-widest">LOADING EXPERIENCE...</Text>
       </View>
     );
   }
 
   if (isError || !seatsData) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <View className="bg-red-50 p-6 rounded-2xl">
-          <Text className="text-red-600 text-lg font-semibold">
-            ⚠️ Failed to load seats
+      <View className="flex-1 justify-center items-center bg-background">
+        <View className="bg-red-950/20 p-8 rounded-3xl border border-red-500/30">
+          <Text className="text-red-500 text-xl font-black text-center uppercase tracking-tighter">
+            ⚠️ Connection Lost
           </Text>
-          <Text className="text-red-500 text-sm mt-2">
-            Please try again later
+          <Text className="text-red-400 text-sm mt-2 text-center">
+            The projector failed. Try again soon.
           </Text>
         </View>
       </View>
@@ -260,26 +260,30 @@ export default function Seats() {
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-background">
       <ScrollView
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View className="bg-white px-4 pt-6 pb-4 border-b border-gray-200">
-          <Text className="text-2xl font-bold text-gray-900">
-            Select Your Seats
+        <View className="bg-[#1A1A1A] px-6 pt-12 pb-6 border-b border-border/50">
+          <Text className="text-3xl font-black text-white italic">
+            CHOOSE SEATS
           </Text>
-          <Text className="text-sm text-gray-500 mt-1">
-            {seatsData.screen?.name || "Screen"} • Show {showId}
-          </Text>
+          <View className="flex-row items-center gap-2 mt-1">
+            <Text className="text-primary font-bold">
+              {seatsData.screen?.name || "Premium Screen"}
+            </Text>
+            <View className="w-1 h-1 rounded-full bg-muted" />
+            <Text className="text-muted text-xs uppercase font-medium">Show ID: {showId}</Text>
+          </View>
         </View>
 
         {/* Screen Indicator */}
-        <View className="items-center mt-8 mb-6 px-4">
-          <View className="w-4/5 h-1 bg-gradient-to-r from-transparent via-gray-400 to-transparent rounded-full" />
-          <View className="w-full h-12 bg-gradient-to-b from-gray-300 to-transparent rounded-b-3xl mt-1" />
-          <Text className="text-xs text-gray-500 mt-2 font-semibold tracking-wider">
+        <View className="items-center mt-10 mb-8 px-6">
+          <View className="w-full h-1 bg-primary/30 rounded-full shadow-lg shadow-primary/50" />
+          <View className="w-full h-8 bg-gradient-to-b from-primary/10 to-transparent rounded-b-3xl mt-1 opacity-50" />
+          <Text className="text-[10px] text-primary font-black tracking-[8px] mt-2 uppercase opacity-80">
             SCREEN
           </Text>
         </View>
@@ -288,42 +292,42 @@ export default function Seats() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16 }}
-          className="mb-6"
+          contentContainerStyle={{ paddingHorizontal: 24 }}
+          className="mb-10"
         >
-          <View className="flex-row space-x-4">
-            <View className="flex-row items-center space-x-2">
-              <View className="w-6 h-6 bg-gray-200 rounded-md border border-gray-300" />
-              <Text className="text-xs text-gray-600">Available</Text>
+          <View className="flex-row gap-6">
+            <View className="flex-row items-center gap-2">
+              <View className="w-5 h-5 bg-card rounded-md border border-border" />
+              <Text className="text-[10px] text-muted font-bold uppercase">Available</Text>
             </View>
-            <View className="flex-row items-center space-x-2">
-              <View className="w-6 h-6 bg-blue-500 rounded-md" />
-              <Text className="text-xs text-gray-600">Your Selection</Text>
+            <View className="flex-row items-center gap-2">
+              <View className="w-5 h-5 bg-primary rounded-md" />
+              <Text className="text-[10px] text-muted font-bold uppercase">Selected</Text>
             </View>
-            <View className="flex-row items-center space-x-2">
-              <View className="w-6 h-6 bg-gray-500 rounded-md" />
-              <Text className="text-xs text-gray-600">Booked</Text>
+            <View className="flex-row items-center gap-2">
+              <View className="w-5 h-5 bg-neutral-800 rounded-md" />
+              <Text className="text-[10px] text-muted font-bold uppercase">Sold</Text>
             </View>
-            <View className="flex-row items-center space-x-2">
-              <View className="w-6 h-6 bg-orange-400 rounded-md" />
-              <Text className="text-xs text-gray-600">Held by Others</Text>
+            <View className="flex-row items-center gap-2">
+              <View className="w-5 h-5 bg-red-500/20 border border-red-500/50 rounded-md" />
+              <Text className="text-[10px] text-muted font-bold uppercase">Held</Text>
             </View>
           </View>
         </ScrollView>
 
         {/* Seat Grid */}
-        <View className="px-4">
+        <View className="px-2">
           {rows.map((row) => {
             const rowSeats = seatsByRow[row].sort(
               (a: Seat, b: Seat) => a.column - b.column
             );
 
             return (
-              <View key={row} className="mb-3">
+              <View key={row} className="mb-4">
                 <View className="flex-row items-center">
                   {/* Row Label */}
-                  <View className="w-10 justify-center items-center">
-                    <Text className="text-sm font-bold text-gray-600">
+                  <View className="w-8 justify-center items-center">
+                    <Text className="text-xs font-black text-primary/50">
                       {row}
                     </Text>
                   </View>
@@ -332,22 +336,22 @@ export default function Seats() {
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ paddingRight: 32 }}
+                    contentContainerStyle={{ paddingHorizontal: 4 }}
                   >
-                    <View className="flex-row space-x-2">
+                    <View className="flex-row gap-2">
                       {rowSeats.map((seat: Seat) => {
                         const styles = getSeatStyles(seat);
 
                         return (
                           <TouchableOpacity
                             key={seat._id}
-                            className={`w-9 h-9 rounded-lg justify-center items-center border-2 ${styles.bg} ${styles.border} ${styles.opacity}`}
+                            className={`w-9 h-9 rounded-xl justify-center items-center border ${styles.bg} ${styles.border} ${styles.opacity}`}
                             onPress={() => handleSelectSeat(seat)}
                             activeOpacity={0.7}
                             disabled={styles.disabled}
                           >
                             <Text
-                              className={`text-xs font-semibold ${styles.text}`}
+                              className={`text-[10px] font-black ${styles.text}`}
                             >
                               {seat.seatNumber}
                             </Text>
@@ -358,8 +362,8 @@ export default function Seats() {
                   </ScrollView>
 
                   {/* Row Label (Right) */}
-                  <View className="w-10 justify-center items-center">
-                    <Text className="text-sm font-bold text-gray-600">
+                  <View className="w-8 justify-center items-center">
+                    <Text className="text-xs font-black text-primary/50">
                       {row}
                     </Text>
                   </View>
@@ -372,19 +376,19 @@ export default function Seats() {
 
       {/* Bottom Action Bar */}
       {selectedSeats.length > 0 && (
-        <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-4 shadow-lg">
-          <View className="flex-row justify-between items-center mb-3">
+        <View className="absolute bottom-0 left-0 right-0 bg-[#1A1A1A] border-t border-border/50 px-6 pt-6 pb-10 shadow-2xl">
+          <View className="flex-row justify-between items-center mb-5">
             <View className="flex-1">
-              <Text className="text-xs text-gray-500">Selected Seats</Text>
-              <Text className="text-sm font-bold text-gray-900">
+              <Text className="text-[10px] text-muted font-black uppercase tracking-widest">Selected Seats</Text>
+              <Text className="text-lg font-black text-white italic">
                 {seatsData.seats
                   .filter((s: Seat) => selectedSeats.includes(s._id))
                   .map((s: Seat) => s.seatNumber)
                   .join(", ")}
               </Text>
             </View>
-            <View className="bg-blue-50 px-3 py-1 rounded-full">
-              <Text className="text-blue-600 font-bold">
+            <View className="bg-primary/10 border border-primary/30 px-4 py-2 rounded-2xl">
+              <Text className="text-primary font-black uppercase text-xs">
                 {selectedSeats.length}{" "}
                 {selectedSeats.length === 1 ? "Seat" : "Seats"}
               </Text>
@@ -395,10 +399,10 @@ export default function Seats() {
             onPress={() => {
               router.replace("/booking");
             }}
-            className="bg-blue-600 py-4 rounded-xl items-center shadow-sm"
+            className="bg-primary py-5 rounded-2xl items-center shadow-xl shadow-primary/30"
           >
-            <Text className="text-white text-base font-bold">
-              Continue to Booking
+            <Text className="text-black text-center font-black uppercase text-lg tracking-widest">
+              Check Out
             </Text>
           </TouchableOpacity>
         </View>

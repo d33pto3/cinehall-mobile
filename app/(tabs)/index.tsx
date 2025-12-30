@@ -6,7 +6,7 @@ import EvilIcons from "@expo/vector-icons/EvilIcons";
 import Feather from "@expo/vector-icons/Feather";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Text, View } from "react-native";
+import { Text, View, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const HomePage = () => {
@@ -28,8 +28,10 @@ const HomePage = () => {
     }
   }, [data, setMovies]);
 
+  const headerHeight = insets.top + (insets.top > 0 ? 40 : 60);
+
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-background">
       {/* Sticky Header */}
       <View
         style={{
@@ -38,42 +40,37 @@ const HomePage = () => {
           left: 0,
           right: 0,
           zIndex: 10,
-          // backgroundColor: "#fff",
-          backgroundColor: "#ccc",
+          backgroundColor: "rgba(26, 26, 26, 0.95)",
           paddingHorizontal: 24,
-          paddingVertical: 8,
           borderBottomWidth: 1,
-          borderColor: "#d4d4d4",
+          borderColor: "#333333",
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          height: insets.top,
-          paddingBottom: 5,
-          minHeight: 40,
+          height: headerHeight,
+          paddingTop: insets.top,
         }}
-        // className="absolute top-0 left-0 right-0 z-10 bg-white px-6 py-2 border-b border-neutral-300 flex-row items-center justify-between"
       >
-        <Text className="text-lg font-bold">Cinehall</Text>
+        <Text className="text-xl font-black italic text-primary">CINEHALL</Text>
         <View style={{ flexDirection: "row", gap: 16, alignItems: "center" }}>
-          <EvilIcons name="search" size={24} color="black" />
-          <Feather name="bell" size={20} color="black" />
+          <EvilIcons name="search" size={28} color="#CAC1C1" />
+          <Feather name="bell" size={22} color="#CAC1C1" />
         </View>
       </View>
 
-      {/* Scroll Content with padding to avoid overlap */}
-      <MovieCarousel
-        isLoading={isLoading}
-        error={error}
-        isError={isError}
-        // refetch={refetch}
-      />
-      <View
-      // contentContainerStyle={{
-      //   paddingTop: insets.top + 5,
-      //   paddingBottom: 50,
-      // }}
-      ></View>
-      <NowShowing />
+      <ScrollView 
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={{ paddingTop: headerHeight }}>
+          <MovieCarousel
+            isLoading={isLoading}
+            error={error}
+            isError={isError}
+          />
+          <NowShowing />
+        </View>
+      </ScrollView>
     </View>
   );
 };

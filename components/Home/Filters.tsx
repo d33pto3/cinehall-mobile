@@ -42,6 +42,7 @@ export default function Filters() {
             flexDirection: "row",
             alignItems: "center",
             borderWidth: 1,
+            borderColor: "#FAAA47",
             borderRadius: 20,
             paddingVertical: 6,
             paddingHorizontal: 12,
@@ -52,16 +53,16 @@ export default function Filters() {
           <FontAwesome
             name="filter"
             size={14}
-            color="black"
+            color="#FAAA47"
             style={{ marginRight: 6 }}
           />
-          <Text>Filter</Text>
+          <Text className="text-white font-medium">Filter</Text>
         </TouchableOpacity>
 
         {/* Selected Filters as Pills (scrollable) */}
         <ScrollView
           horizontal
-          showsHorizontalScrollIndicator={true}
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ flexDirection: "row", alignItems: "center" }}
         >
           {selectedFilters.map((filter) => (
@@ -71,16 +72,17 @@ export default function Filters() {
                 flexDirection: "row",
                 alignItems: "center",
                 borderWidth: 1,
+                borderColor: "#FAAA47",
                 borderRadius: 20,
                 paddingVertical: 6,
                 paddingHorizontal: 12,
-                backgroundColor: "#f2f2f2",
+                backgroundColor: "#1E1E1E",
                 marginRight: 8,
               }}
             >
-              <Text style={{ marginRight: 6 }}>{filter}</Text>
+              <Text style={{ marginRight: 6, color: "white" }}>{filter}</Text>
               <Pressable onPress={() => toggleFilter(filter)}>
-                <FontAwesome name="close" size={14} color="black" />
+                <FontAwesome name="close" size={14} color="#FAAA47" />
               </Pressable>
             </View>
           ))}
@@ -98,51 +100,54 @@ export default function Filters() {
           style={{
             flex: 1,
             justifyContent: "flex-end",
-            backgroundColor: "rgba(0,0,0,0.4)",
+            backgroundColor: "rgba(0,0,0,0.7)",
           }}
           onPress={() => setModalVisible(false)} // 👈 closes modal when tapping outside
         >
           <Pressable
             style={{
-              backgroundColor: "white",
-              padding: 20,
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
+              backgroundColor: "#1A1A1A",
+              padding: 24,
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
               maxHeight: "70%",
+              borderTopWidth: 1,
+              borderTopColor: "#FAAA47",
             }}
             onPress={(e) => e.stopPropagation()} // 👈 prevents modal from closing when tapping inside
           >
-            <Text style={{ fontSize: 16, fontWeight: "600", marginBottom: 12 }}>
-              Select Filters
+            <Text style={{ fontSize: 20, fontWeight: "800", marginBottom: 20, color: "#FAAA47" }}>
+              Filter Movies
             </Text>
 
             {/* Loop through categories */}
             {Object.entries(filterCategories).map(([category, filters]) => (
-              <View key={category} style={{ marginBottom: 16 }}>
+              <View key={category} style={{ marginBottom: 20 }}>
                 <Text
-                  style={{ fontSize: 14, fontWeight: "600", marginBottom: 8 }}
+                  style={{ fontSize: 14, fontWeight: "700", marginBottom: 12, color: "#FFFFFF" }}
                 >
                   {category}
                 </Text>
 
                 <View
-                  style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
+                  style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}
                 >
                   {filters.map((filter) => (
                     <TouchableOpacity
                       key={filter}
                       style={{
                         borderWidth: 1,
+                        borderColor: selectedFilters.includes(filter) ? "#FAAA47" : "#2E2E2E",
                         borderRadius: 20,
-                        paddingVertical: 6,
-                        paddingHorizontal: 12,
+                        paddingVertical: 8,
+                        paddingHorizontal: 16,
                         backgroundColor: selectedFilters.includes(filter)
-                          ? "#ddd"
-                          : "white",
+                          ? "#FAAA47"
+                          : "#1E1E1E",
                       }}
                       onPress={() => toggleFilter(filter)}
                     >
-                      <Text>{filter}</Text>
+                      <Text style={{ color: selectedFilters.includes(filter) ? "#121212" : "#CAC1C1", fontWeight: "600" }}>{filter}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -153,14 +158,14 @@ export default function Filters() {
             <TouchableOpacity
               style={{
                 marginTop: 10,
-                backgroundColor: "black",
-                padding: 12,
-                borderRadius: 10,
+                backgroundColor: "#FAAA47",
+                padding: 16,
+                borderRadius: 16,
                 alignItems: "center",
               }}
               onPress={() => setModalVisible(false)}
             >
-              <Text style={{ color: "white", fontWeight: "600" }}>Apply</Text>
+              <Text style={{ color: "#121212", fontWeight: "800", fontSize: 16 }}>Apply Filters</Text>
             </TouchableOpacity>
           </Pressable>
         </Pressable>

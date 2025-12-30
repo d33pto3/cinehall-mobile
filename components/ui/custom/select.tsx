@@ -13,30 +13,29 @@ const Select = ({
   return (
     <View className="relative">
       <TouchableOpacity
-        className="relative w-full rounded-sm border-[1px] mt-1"
+        className="relative w-full rounded-xl border border-primary/50 bg-card mt-1 px-3 py-2"
         onPress={() => {
           setShowOptions((prev) => !prev);
         }}
       >
-        <Text className="py-1 pr-4 pl-1">Select...</Text>
-        <Text className="absolute top-[50%] -translate-y-1/2 right-1">v</Text>
+        <Text className="text-white font-medium">Select...</Text>
+        <Text className="absolute top-[50%] -translate-y-1/2 right-3 text-primary font-bold">v</Text>
       </TouchableOpacity>
       {showOptions && (
         <View
-          className="absolute top-[100%] w-full flex gap-1 border-x-[1px] bg-white"
-          style={{ elevation: 5 }}
+          className="absolute top-[105%] w-full flex gap-1 border border-primary/30 bg-card rounded-xl overflow-hidden"
+          style={{ elevation: 10, zIndex: 100 }}
         >
           {options.map((opt, idx) => (
             <TouchableOpacity
               key={idx}
-              className="border-b-[1px] p-1"
+              className="border-b border-border/10 p-3 active:bg-primary/20"
               onPress={() => {
-                // setPlaceholder(opt.text);
                 onSelect(opt.key);
                 setShowOptions(false);
               }}
             >
-              <Text>{opt.text}</Text>
+              <Text className="text-white font-medium">{opt.text}</Text>
             </TouchableOpacity>
           ))}
         </View>

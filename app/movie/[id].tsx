@@ -136,65 +136,94 @@ export default function MovieDetail() {
 
   if (isLoading)
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" />
+      <View className="flex-1 justify-center items-center bg-background">
+        <ActivityIndicator size="large" color="#FAAA47" />
       </View>
     );
 
   if (isError || !movie)
     return (
-      <View className="flex-1 justify-center items-center">
-        <Text>Error loading movie details.</Text>
+      <View className="flex-1 justify-center items-center bg-background p-6">
+        <Text className="text-white text-lg font-bold text-center">Curtains closed. Error loading details.</Text>
       </View>
     );
 
   return (
-    <ScrollView className="flex-1 px-4">
+    <ScrollView className="flex-1 bg-background px-4">
       {/* Step 1: Selected Movie */}
       <Image
         source={{ uri: movie.imageUrl }}
-        className="w-full h-96 rounded-xl mb-4"
+        className="w-full h-[500px] rounded-2xl mb-6 shadow-2xl"
         resizeMode="cover"
       />
-      <Text className="text-2xl font-bold mb-2">{movie.title}</Text>
-      <Text className="text-gray-500 mb-2">
-        {movie.genre} | {movie.duration} minutes
-      </Text>
+      <View className="mb-6">
+        <Text className="text-3xl font-black text-white mb-2 italic">
+          {movie.title.toUpperCase()}
+        </Text>
+        <View className="flex-row items-center gap-2">
+          <Text className="text-primary font-bold">{movie.genre}</Text>
+          <View className="w-1 h-1 rounded-full bg-muted" />
+          <Text className="text-muted font-medium">{movie.duration} min</Text>
+        </View>
+      </View>
 
       {/*Step 2: Date picker */}
-      <ShowDay selectedDate={selectedDate} onSelect={handleSelectDate} />
+      <View className="mb-6">
+        <Text className="text-white font-bold mb-4 uppercase tracking-widest text-xs">
+          Step 1: Select Date
+        </Text>
+        <ShowDay selectedDate={selectedDate} onSelect={handleSelectDate} />
+      </View>
 
       {/* Step 3: Hall picker */}
-      <HallPicker movieId={movieId} date={selectedDate} />
+      <View className="mb-6">
+        <Text className="text-white font-bold mb-2 uppercase tracking-widest text-xs opacity-60">
+          Step 2: Choose Cinema
+        </Text>
+        <HallPicker movieId={movieId} date={selectedDate} />
+      </View>
 
       {/* Step 4: Screen Picker */}
       {step >= 4 && currentHallId && (
-        <ScreenPicker
-          hallId={currentHallId}
-          movieId={movieId}
-          date={selectedDate}
-        />
+        <View className="mb-6">
+          <Text className="text-white font-bold mb-2 uppercase tracking-widest text-xs opacity-60">
+            Step 3: Select Screen Type
+          </Text>
+          <ScreenPicker
+            hallId={currentHallId}
+            movieId={movieId}
+            date={selectedDate}
+          />
+        </View>
       )}
 
       {/*Step 5: Time Slots */}
-      {step >= 5 &&
-        (showtimeLoading ? (
-          <ActivityIndicator size="small" className="mt-4" />
-        ) : (
-          <Showtime
-            selectedSlot={selectedSlot as keyof typeof Slots}
-            showtimes={showtimes}
-            onSelect={handleSelectSlot}
-          />
-        ))}
+      {step >= 5 && (
+        <View className="mb-8">
+          <Text className="text-white font-bold mb-4 uppercase tracking-widest text-xs">
+            Step 4: Available Showtime
+          </Text>
+          {showtimeLoading ? (
+            <ActivityIndicator size="small" color="#FAAA47" />
+          ) : (
+            <Showtime
+              selectedSlot={selectedSlot as keyof typeof Slots}
+              showtimes={showtimes}
+              onSelect={handleSelectSlot}
+            />
+          )}
+        </View>
+      )}
 
       {/*Step 6: Goto Seat Booking page and select seats */}
       {canBookSeat && step >= 6 && (
         <TouchableOpacity
-          className="mt-2 p-2 rounded-md bg-black"
+          className="mt-4 mb-20 p-5 rounded-2xl bg-primary shadow-xl shadow-primary/30"
           onPress={handleProceedToSeat}
         >
-          <Text className="text-white text-center">Select seats</Text>
+          <Text className="text-black text-center font-black uppercase text-lg tracking-widest">
+            Select Seats
+          </Text>
         </TouchableOpacity>
       )}
     </ScrollView>

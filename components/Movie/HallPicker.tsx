@@ -47,7 +47,7 @@ const HallPicker = ({ movieId, date }: { movieId: string; date: Date }) => {
             className="w-[50%] flex flex-row items-center gap-2 relative"
             style={{ zIndex: 10 }}
           >
-            <Text>Halls:</Text>
+            <Text className="text-white">Halls:</Text>
             <View className="flex-1" style={{ zIndex: 20 }}>
               <Select
                 options={halls?.map((hall: Hall) => ({
@@ -59,12 +59,13 @@ const HallPicker = ({ movieId, date }: { movieId: string; date: Date }) => {
             </View>
           </View>
 
-          <View className="mt-2 py-1">
-            <Text>Selected Hall: {hallName || "None"}</Text>
+          <View className="mt-4 py-1 flex-row items-center gap-2">
+            <Text className="text-muted">Selected:</Text>
+            <Text className="text-primary font-bold">{hallName || "None"}</Text>
           </View>
         </>
       ) : (
-        <Text>No shows</Text>
+        <Text className="text-white/50 italic px-2">No shows available for this date.</Text>
       )}
     </View>
   );

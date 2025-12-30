@@ -23,14 +23,22 @@ const Showtime = ({ selectedSlot, showtimes, onSelect }: ShowtimeProps) => {
             key={key}
             onPress={() => onSelect(key, showId)}
             disabled={isDisabled}
-            className={`px-4 py-2 rounded-full border 
-              ${isActive ? "bg-blue-500 border-blue-500" : "border-gray-400"} 
-              ${isDisabled && "bg-gray-300 border-gray-400"}`}
+            style={{
+              backgroundColor: isActive ? "#FAAA47" : isDisabled ? "#1A1A1A" : "#1E1E1E",
+              borderColor: isActive ? "#FAAA47" : "#2E2E2E",
+              borderWidth: 1,
+              borderRadius: 12,
+              paddingHorizontal: 16,
+              paddingVertical: 10,
+              opacity: isDisabled ? 0.3 : 1,
+            }}
           >
             <Text
-              className={`text-sm ${isDisabled ? "opacity-60 text-black" : ""} ${
-                isActive && "text-white"
-              } `}
+              style={{
+                color: isActive ? "#000" : "#FFF",
+                fontWeight: isActive ? "800" : "500",
+                fontSize: 13,
+              }}
             >
               {label}
             </Text>

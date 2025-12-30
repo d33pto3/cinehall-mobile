@@ -24,3 +24,12 @@ export const initiatePayment = async (
     throw error;
   }
 };
+
+export const getUserBookings = async (userId: string) => {
+  try {
+    const response = await api.get(ENDPOINTS.GET_USER_BOOKINGS(userId));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

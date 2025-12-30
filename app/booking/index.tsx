@@ -1,11 +1,10 @@
 import { ENDPOINTS } from "@/api/endpoints";
-import api from "@/services/api";
 import { createBooking } from "@/api/booking";
 import { getOrCreateGuestId } from "@/utility/guestUtils";
 import { useAuthStore } from "@/store/authStore";
 import { useBookingStore } from "@/store/bookingStore";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Alert,
   Image,
@@ -13,21 +12,12 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Modal,
-  TextInput,
 } from "react-native";
 import { Toast } from "toastify-react-native";
 
 export default function Booking() {
   const { getBookingSummary, isBookingComplete } = useBookingStore();
-
-  const { isLoggedIn, user, register } = useAuthStore();
-  const [guestModalVisible, setGuestModalVisible] = useState(false);
-  const [guestName, setGuestName] = useState("");
-  const [guestEmail, setGuestEmail] = useState("");
-  const [isRegistering, setIsRegistering] = useState(false);
-
-  console.log(user);
+  const { isLoggedIn, user } = useAuthStore();
 
   const bookingSummary = getBookingSummary();
 
@@ -57,46 +47,37 @@ export default function Booking() {
 
   const handleConfirmBooking = async () => {
     if (!isLoggedIn) {
-      setGuestModalVisible(true);
+      Alert.alert(
+        "Sign In Required",
+        "You need to be logged in to confirm your booking.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Sign In",
+            onPress: () => {
+              // Optionally pass a redirect param if your login flow supports it
+              router.push("/(auth)/login");
+            },
+          },
+        ]
+      );
       return;
     }
     await processBooking();
   };
 
-  const handleGuestSubmit = async () => {
-    if (!guestName || !guestEmail) {
-      Toast.error("Please enter both Name and Email");
-      return;
-    }
-
-    try {
-      setIsRegistering(true);
-      // Auto-register guest
-      // Password generation: Guest + short random string or simple default
-      // Using a constant password for simplicity as per plan "GuestPass123!"
-      await register(guestEmail, "GuestPass123!", guestName);
-      
-      setGuestModalVisible(false);
-      // Proceed to booking now that we are logged in
-      await processBooking();
-
-    } catch (error: any) {
-       const msg = error?.response?.data?.message || "Guest registration failed";
-       Toast.error(msg);
-    } finally {
-      setIsRegistering(false);
-    }
-  };
-
   const processBooking = async () => {
     try {
       const guestId = await getOrCreateGuestId();
-      // Refetch user from store as it might be updated after register
+      // Refetch user from store as it might be updated
       const currentUser = useAuthStore.getState().user; 
 
       const payload = {
         userId: currentUser?._id,
-        guestId,
+        guestId, // Keep guestId for reference or backend fallback logic if needed
         showId: bookingSummary.showId,
         screenId: bookingSummary.screenId,
         movieId: bookingSummary.movie._id,
@@ -132,80 +113,80 @@ export default function Booking() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50">
-    <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 100 }}>
-       <View className="bg-white px-4 pt-6 pb-4 border-b border-gray-200">
-        <Text className="text-2xl font-bold text-gray-900">
-          Booking Summary
+    <View className="flex-1 bg-background">
+      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 100 }}>
+       <View className="bg-[#1A1A1A] px-6 pt-12 pb-6 border-b border-border/50">
+        <Text className="text-3xl font-black text-white italic">
+          SUMMARY
         </Text>
-        <Text className="text-sm text-gray-500 mt-1">
-          Review your booking details
+        <Text className="text-muted text-xs uppercase font-bold tracking-widest mt-1">
+          Review your cinematic experience
         </Text>
       </View>
 
       {/* Movie Info */}
-      <View className="bg-white mt-2 p-4">
+      <View className="bg-card mt-2 p-6 border-y border-border/50">
         <View className="flex-row">
           <Image
             source={{ uri: bookingSummary.movie.imageUrl }}
-            className="w-24 h-36 rounded-lg"
+            className="w-24 h-36 rounded-2xl border border-border"
             resizeMode="cover"
           />
-          <View className="flex-1 ml-4">
-            <Text className="text-xl font-bold text-gray-900">
+          <View className="flex-1 ml-5 justify-center">
+            <Text className="text-2xl font-black text-white italic uppercase">
               {bookingSummary.movie.title}
             </Text>
-            <Text className="text-sm text-gray-600 mt-1">
+            <Text className="text-primary font-bold mt-1">
               {bookingSummary.movie.genre}
             </Text>
-            <Text className="text-sm text-gray-600">
-              {bookingSummary.movie.duration} minutes
+            <Text className="text-muted text-xs mt-1 font-medium">
+              {bookingSummary.movie.duration} MINUTES
             </Text>
           </View>
         </View>
       </View>
 
       {/* Booking Details */}
-      <View className="bg-white mt-2 p-4">
-        <Text className="text-lg font-bold text-gray-900 mb-4">
+      <View className="bg-card mt-2 p-6 border-y border-border/50">
+        <Text className="text-lg font-black text-white italic mb-6 uppercase tracking-widest">
           Show Details
         </Text>
 
-        <View className="space-y-3">
-          <View className="flex-row justify-between">
-            <Text className="text-gray-600">Date</Text>
-            <Text className="font-semibold text-gray-900">
+        <View className="gap-4">
+          <View className="flex-row justify-between items-center">
+            <Text className="text-muted font-bold uppercase text-[10px]">Date</Text>
+            <Text className="font-bold text-white">
               {formatDate(bookingSummary.date)}
             </Text>
           </View>
 
-          <View className="flex-row justify-between">
-            <Text className="text-gray-600">Time Slot</Text>
-            <Text className="font-semibold text-gray-900">
+          <View className="flex-row justify-between items-center">
+            <Text className="text-muted font-bold uppercase text-[10px]">Time Slot</Text>
+            <Text className="font-bold text-primary">
               {bookingSummary.slot}
             </Text>
           </View>
 
-          <View className="flex-row justify-between">
-            <Text className="text-gray-600">Screen</Text>
-            <Text className="font-semibold text-gray-900">
+          <View className="flex-row justify-between items-center">
+            <Text className="text-muted font-bold uppercase text-[10px]">Screen</Text>
+            <Text className="font-bold text-white">
               {bookingSummary.screenId}
             </Text>
           </View>
 
-          <View className="flex-row justify-between">
-            <Text className="text-gray-600">Seats</Text>
-            <Text className="font-semibold text-gray-900">
+          <View className="flex-row justify-between items-center">
+            <Text className="text-muted font-bold uppercase text-[10px]">Seats</Text>
+            <Text className="font-bold text-white">
               {bookingSummary.seatNumbers}
             </Text>
           </View>
 
-          <View className="border-t border-gray-200 pt-3 mt-3">
-            <View className="flex-row justify-between">
-              <Text className="text-gray-600">Total Seats</Text>
-              <Text className="font-bold text-lg text-gray-900">
+          <View className="border-t border-border/30 pt-5 mt-2">
+            <View className="flex-row justify-between items-center">
+              <Text className="text-white font-black italic uppercase">Total Investment</Text>
+              <Text className="font-black text-2xl text-primary italic">
                 {bookingSummary.totalSeats}{" "}
-                {bookingSummary.totalSeats === 1 ? "Seat" : "Seats"}
+                {bookingSummary.totalSeats === 1 ? "SEAT" : "SEATS"}
               </Text>
             </View>
           </View>
@@ -214,82 +195,23 @@ export default function Booking() {
     </ScrollView>
 
       {/* Action Buttons */}
-      <View className="p-4 space-y-3 bg-white border-t border-gray-200 absolute bottom-0 left-0 right-0">
+      <View className="p-6 gap-3 bg-[#1A1A1A] border-t border-border/50 absolute bottom-0 left-0 right-0">
         <TouchableOpacity
-          className="bg-blue-600 py-4 rounded-xl items-center shadow-sm"
+          className="bg-primary py-5 rounded-2xl items-center shadow-xl shadow-primary/30"
           onPress={handleConfirmBooking}
         >
-          <Text className="text-white text-base font-bold">Confirm & Pay</Text>
+          <Text className="text-black text-lg font-black uppercase tracking-widest">Confirm & Pay</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="bg-gray-200 py-4 rounded-xl items-center"
+          className="bg-neutral-800 py-5 rounded-2xl items-center"
           onPress={() => router.back()}
         >
-          <Text className="text-gray-700 text-base font-semibold">
+          <Text className="text-white text-sm font-bold uppercase tracking-widest">
             Back to Seats
           </Text>
         </TouchableOpacity>
       </View>
-
-      {/* Guest Modal */}
-       <Modal
-        animationType="slide"
-        transparent={true}
-        visible={guestModalVisible}
-        onRequestClose={() => setGuestModalVisible(false)}
-      >
-        <View className="flex-1 justify-center items-center bg-black/50">
-          <View className="bg-white m-5 p-6 rounded-2xl w-[90%] shadow-xl">
-            <Text className="text-xl font-bold text-gray-900 mb-4">Guest Checkout</Text>
-            <Text className="text-gray-500 mb-4">Enter your details to proceed with payment.</Text>
-            
-            <View className="space-y-4">
-              <View>
-                <Text className="text-gray-700 font-medium mb-1">Full Name</Text>
-                <TextInput
-                  className="border border-gray-300 rounded-lg p-3 text-base"
-                  placeholder="John Doe"
-                  value={guestName}
-                  onChangeText={setGuestName}
-                />
-              </View>
-              
-              <View>
-                <Text className="text-gray-700 font-medium mb-1">Email Address</Text>
-                <TextInput
-                  className="border border-gray-300 rounded-lg p-3 text-base"
-                  placeholder="john@example.com"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  value={guestEmail}
-                  onChangeText={setGuestEmail}
-                />
-              </View>
-            </View>
-
-             <View className="mt-6 flex-row justify-end space-x-3 gap-2">
-                <TouchableOpacity 
-                   onPress={() => setGuestModalVisible(false)}
-                   className="px-4 py-3 bg-gray-200 rounded-lg"
-                   disabled={isRegistering}
-                >
-                   <Text className="text-gray-700 font-semibold">Cancel</Text>
-                </TouchableOpacity>
-
-                 <TouchableOpacity 
-                   onPress={handleGuestSubmit}
-                   className="px-4 py-3 bg-blue-600 rounded-lg"
-                   disabled={isRegistering}
-                >
-                   <Text className="text-white font-semibold">
-                     {isRegistering ? "Processing..." : "Continue to Pay"}
-                   </Text>
-                </TouchableOpacity>
-             </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }

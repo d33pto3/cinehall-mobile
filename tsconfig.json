@@ -5,6 +5,9 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@tabler/icons-react-native": [
+        "./node_modules/@tabler/icons-react-native/dist/tabler-icons-react-native.d.ts"
       ]
     }
   },

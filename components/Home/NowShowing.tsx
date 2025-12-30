@@ -3,9 +3,10 @@ import { movieKeys } from "@/api/movie/movieKeys";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, Text, View, ActivityIndicator } from "react-native";
 import Filters from "./Filters";
 import MovieCard from "./MovieCard";
+import { EmptyMoviesFallback } from "../shared/EmptyMoviesFallback";
 
 export default function NowShowing() {
   const { data, isLoading, isError, error } = useQuery({
@@ -20,11 +21,16 @@ export default function NowShowing() {
     router.push(`/movie/${movieId}`);
   };
 
-  if (isLoading) return <Text>Loading...</Text>;
+  if (isLoading)
+    return (
+      <View className="flex-1 justify-center items-center py-20">
+        <ActivityIndicator size="large" color="#FAAA47" />
+      </View>
+    );
 
   return (
-    <View className="flex-1 py-2 px-3">
-      <Text style={{ fontSize: 16, fontWeight: "500" }}>Now Showing</Text>
+    <View className="flex-1 py-1 px-4">
+      <Text className="text-xl font-bold text-white mb-2">Now Showing</Text>
       <Filters />
       <FlatList
         data={data}
@@ -32,6 +38,7 @@ export default function NowShowing() {
         numColumns={2}
         columnWrapperStyle={{ justifyContent: "space-between" }}
         contentContainerStyle={{ paddingVertical: 12 }}
+        ListEmptyComponent={<EmptyMoviesFallback title="Movies" className="mt-10" />}
         renderItem={({ item }) => (
           <MovieCard movie={item} onPress={goToMovie} />
         )}

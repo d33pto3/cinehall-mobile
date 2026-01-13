@@ -4,7 +4,7 @@ import { ENDPOINTS } from "../endpoints";
 export const getAllMovies = async () => {
   try {
     const response = await api.get(ENDPOINTS.MOVIES);
-    return response.data.data;
+    return response?.data?.data || [];
   } catch (err) {
     throw err;
   }
@@ -13,7 +13,7 @@ export const getAllMovies = async () => {
 export const getNowShowingMovies = async () => {
   try {
     const response = await api.get("/movie/now-showing");
-    return response.data.movies;
+    return response?.data?.data || [];
   } catch (error) {
     throw error;
   }

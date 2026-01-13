@@ -6,9 +6,8 @@ import { router } from "expo-router";
 import { Platform } from "react-native";
 
 // TODO: move to .env
-const API_BASE_URL = Platform.OS === "web" 
-  ? "http://localhost:8000/api/v1" 
-  : "http://10.15.5.153:8000/api/v1";
+// Note: Use 10.0.2.2 for Android Emulator, or your machine's LAN IP for physical device
+const API_BASE_URL = "https://cinehall-server.onrender.com/api/v1";
 
 const api = axios.create({
   baseURL: API_BASE_URL,

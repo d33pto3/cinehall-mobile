@@ -58,9 +58,10 @@ const HomePage = () => {
         </View>
       </View>
 
-      <ScrollView 
+      <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}
       >
         <View style={{ paddingTop: headerHeight }}>
           <MovieCarousel

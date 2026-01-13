@@ -1,3 +1,4 @@
+import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -38,12 +39,16 @@ const TabsLayout = () => {
           headerTitle: "Movies",
           title: "Movies",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="movie-open-outline" size={size} color={color} />
+            <MaterialCommunityIcons
+              name="movie-open-outline"
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
       <Tabs.Screen
-        name="theaters/index"
+        name="theaters"
         options={{
           headerTitle: "Theaters",
           title: "Theaters",
@@ -53,26 +58,22 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="bookings/index"
+        name="bookings"
         options={{
           headerTitle: "Bookings",
           title: "Bookings",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="ticket-confirmation-outline"
-              size={size}
-              color={color}
-            />
+            <AntDesign name="book" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="profile/index"
+        name="profile"
         options={{
           headerTitle: "Profiles",
           title: "Profiles",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <AntDesign name="user" size={size} color={color} />
           ),
         }}
       />

@@ -33,12 +33,15 @@ export default function NowShowing() {
       <Text className="text-xl font-bold text-white mb-2">Now Showing</Text>
       <Filters />
       <FlatList
+        scrollEnabled={false}
         data={data}
         keyExtractor={(item) => item._id.toString()}
         numColumns={2}
         columnWrapperStyle={{ justifyContent: "space-between" }}
         contentContainerStyle={{ paddingVertical: 12 }}
-        ListEmptyComponent={<EmptyMoviesFallback title="Movies" className="mt-10" />}
+        ListEmptyComponent={
+          <EmptyMoviesFallback title="Movies" className="mt-10" />
+        }
         renderItem={({ item }) => (
           <MovieCard movie={item} onPress={goToMovie} />
         )}
